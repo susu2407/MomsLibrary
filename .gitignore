@@ -1,0 +1,67 @@
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+### 환경변수 / 시크릿 ###
+.env
+.env.*
+application-local.properties
+application-local.yml
+application-secret.yml
+
+# 로그
+*.log
+logs/
+
+# 컴파일된 클래스
+*.class
+
+# 패키징 결과물
+*.jar
+*.war
+*.ear
+# (단, gradle wrapper jar는 이미 예외처리 되어 있으니 순서 주의)
+
+# OS 파생 파일
+.DS_Store        # macOS
+Thumbs.db        # Windows
+
+# Lombok, QueryDSL 등 자동생성 파일
+generated/
+
+# 테스트 커버리지
+.jacoco/
