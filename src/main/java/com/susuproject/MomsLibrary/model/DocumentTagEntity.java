@@ -22,6 +22,7 @@ public class DocumentTagEntity {
     @JoinColumn(name = "tag_id")
     private TagEntity tag;
 
+
     // JPA 표준에 따른 기본 생성자
     protected DocumentTagEntity() {}
 
