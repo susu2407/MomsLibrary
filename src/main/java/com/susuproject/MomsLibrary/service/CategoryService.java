@@ -34,7 +34,7 @@ public class CategoryService {
     }
 
     // 카테고리 등록
-    public CategoryEntity saveCategory(CategoryEntity parent, String categoryName) {
+    public CategoryEntity createCategory(CategoryEntity parent, String categoryName) {
         CategoryEntity category = new CategoryEntity(categoryName, parent);
         return categoryRepository.save(category);
     }
