@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface CategoryRepository extends JpaRepository<CategoryEntity,Integer> {
 
-    // 전체 목록 조회 (JPA 자동) findAll()
+    // JPA 자동: 전체 목록 조회 findAllBy(), 등록save(), 삭제delete(),..
 
     // 상위 카테고리만 조회 (parent_id가 없는 것)
     List<CategoryEntity> findByParentIsNull();
