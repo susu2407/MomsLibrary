@@ -22,8 +22,8 @@ public class CategoryEntity {
     protected CategoryEntity() {}
 
     // 객체 생성을 위한 생성자
-    public CategoryEntity(String name) {
+    public CategoryEntity(String name, CategoryEntity parent) {
         this.name = name;
+        this.parent = parent;
     }
-
 }

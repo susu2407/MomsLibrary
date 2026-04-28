@@ -34,5 +34,13 @@ public class CategoryService {
     }
 
     // 카테고리 등록
+    public CategoryEntity saveCategory(CategoryEntity parent, String categoryName) {
+        CategoryEntity category = new CategoryEntity(categoryName, parent);
+        return categoryRepository.save(category);
+    }
+
     // 카테고리 삭제
+    public void deleteCategory(Integer id) {
+        categoryRepository.deleteById(id);
+    }
 }
