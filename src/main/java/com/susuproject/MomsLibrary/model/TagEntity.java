@@ -22,4 +22,7 @@ public class TagEntity {
         this.name = name;
     }
 
+    public Integer getId() {
+        return id;
+    }
 }
