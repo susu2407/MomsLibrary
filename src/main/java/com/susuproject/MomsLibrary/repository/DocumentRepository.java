@@ -18,7 +18,7 @@ public interface DocumentRepository extends JpaRepository<DocumentEntity,Integer
     List<DocumentEntity> findByAuthorContaining(String author);
 
     // 제목 또는 저자로 검색 (통합 검색)
-    List<DocumentEntity> findByTitleOrAuthor(String title, String author);
+    List<DocumentEntity> findByTitleContainingOrAuthorContaining(String title, String author);
 
     // 카테고리로 필터
     List<DocumentEntity> findByCategory(CategoryEntity category);
