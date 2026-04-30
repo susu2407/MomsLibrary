@@ -2,6 +2,7 @@ package com.susuproject.MomsLibrary.service;
 
 import com.susuproject.MomsLibrary.model.CategoryEntity;
 import com.susuproject.MomsLibrary.repository.CategoryRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,14 +34,19 @@ public class CategoryService {
         return categoryRepository.findByParent(parent);
     }
 
-    // 카테고리 등록
+    // 카테고리 등록 + 예외처리
+    @Transactional
     public CategoryEntity createCategory(CategoryEntity parent, String categoryName) {
         CategoryEntity category = new CategoryEntity(categoryName, parent);
         return categoryRepository.save(category);
     }
 
-    // 카테고리 삭제
+    // 카테고리 삭제 + 예외처리
+    @Transactional
     public void deleteCategory(Integer id) {
+        if (!categoryRepository.existsById(id)) {
+            throw new IllegalArgumentException("해당 " + id + "를 가진 카테고리가 존재하지 않습니다.");
+        }
         categoryRepository.deleteById(id);
     }
 }
