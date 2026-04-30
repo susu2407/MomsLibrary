@@ -75,5 +75,7 @@ public class DocumentEntity {
         this.category = category;
     }
 
-
+    public Integer getId() {
+        return id;
+    }
 }

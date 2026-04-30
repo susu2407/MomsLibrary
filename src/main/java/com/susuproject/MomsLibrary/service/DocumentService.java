@@ -3,6 +3,8 @@ package com.susuproject.MomsLibrary.service;
 import com.susuproject.MomsLibrary.model.CategoryEntity;
 import com.susuproject.MomsLibrary.model.DocumentEntity;
 import com.susuproject.MomsLibrary.repository.DocumentRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,24 +20,30 @@ public class DocumentService {
     }
 
 
-    //자료 전체 목록 조회 (최신순)
+    //자료 전체 목록 조회 (최신순) - 첫 화면 출력용
     public List<DocumentEntity> getAllDocuments() {
-        return documentRepository.findAll();
+        return documentRepository.findAllByOrderByCreatedAtDesc();
     }
 
     //자료 등록 (code 자동 생성 포함)
+    @Transactional
     public DocumentEntity createDocument(DocumentEntity documentEntity) {
         return documentRepository.save(documentEntity);
     }
 
-    //자료 수정
+    //자료 수정 + 예외처리
+    @Transactional
     public DocumentEntity updateDocument(DocumentEntity documentEntity) {
+        if (documentEntity.getId() == null) {
+            throw new IllegalArgumentException("존재하지 않는 자료입니다. 수정이 불가합니다.");
+        }
         return documentRepository.save(documentEntity);
     }
 
     //자료 삭제
-    public void deleteDocument(int id) {
-        documentRepository.deleteById(id);
+    @Transactional
+    public void deleteDocument(Integer id) {
+        documentRepository.findById(id).ifPresent(documentRepository::delete);
     }
 
     //제목으로 검색
