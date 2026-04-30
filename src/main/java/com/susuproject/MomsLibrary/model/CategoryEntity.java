@@ -26,4 +26,10 @@ public class CategoryEntity {
         this.name = name;
         this.parent = parent;
     }
+
+    public Integer getId() {
+        return id;
+    }
+
+
 }

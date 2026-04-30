@@ -41,6 +41,15 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
+    // 카테고리 수정 + 예외처리
+    @Transactional
+    public CategoryEntity updateCategory(CategoryEntity categoryEntity) {
+        if (categoryEntity.getId() == null) {
+            throw new IllegalArgumentException("존재하지 않는 자료입니다. 수정이 불가합니다.");
+        }
+        return categoryRepository.save(categoryEntity);
+    }
+
     // 카테고리 삭제 + 예외처리
     @Transactional
     public void deleteCategory(Integer id) {
