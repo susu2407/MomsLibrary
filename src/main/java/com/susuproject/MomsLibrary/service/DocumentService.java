@@ -46,6 +46,7 @@ public class DocumentService {
         documentRepository.findById(id).ifPresent(documentRepository::delete);
     }
 
+    // ------ 검색 ----------------------------------------
     //제목으로 검색
     public List<DocumentEntity> searchTitleDocument(String title) {
         return documentRepository.findByTitleContaining(title);
@@ -66,10 +67,13 @@ public class DocumentService {
         return documentRepository.findByCategory(category);
     }
 
-    // ------ 정렬 -------------------------
-    // 최신순 정렬
-    // 제목 가나다 정렬
-    // 제목 하파타 정렬
-    // No 정렬
+    // ------ 정렬 -----------------------------------------
+    // 동적 코드 사용해보기
+    public List<DocumentEntity> orderByOptionDocument() {
+        return documentRepository.findAll(
+                Sort.by(Sort.Direction.DESC, "createdAt")           // 최신순
+                        .and(Sort.by(Sort.Direction.ASC, "title"))  // 제목 가나다순
+        );
+    }
 
 }
