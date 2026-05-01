@@ -7,28 +7,22 @@
 <body>
 <div>
     <h1>자료 목록</h1>
-    <ul>
-        <li th:each="doc : ${documents}">
-            <span th:text="${doc.title}">제목</span>
-        </li>
-
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>제목</th>
-                    <th>저자</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="doc : ${documents}">
-                    <td th:text="${doc.id}">1</td>
-                    <td th:text="${doc.title}">제목</td>
-                    <td th:text="${doc.author}">저자</td>
-                </tr>
-            </tbody>
-        </table>
-    </ul>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>제목</th>
+                <th>저자</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="doc : ${documents}">
+                <td th:text="${doc.id}">1</td>
+                <td th:text="${doc.title}">제목</td>
+                <td th:text="${doc.author}">저자</td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 
 </body>
