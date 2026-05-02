@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자료 관리 시스템</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+          --bg-primary: #ffffff;
+          --bg-secondary: #f5f5f4;
+          --bg-tertiary: #eeede9;
+          --bg-info: #e6f1fb;
+          --bg-success: #eaf3de;
+          --bg-warning: #faeeda;
+          --bg-danger: #fcebeb;
+          --text-primary: #1a1a18;
+          --text-secondary: #6b6b67;
+          --text-tertiary: #9e9e9a;
+          --text-info: #185fa5;
+          --text-success: #3b6d11;
+          --text-warning: #854f0b;
+          --text-danger: #a32d2d;
+          --border-light: rgba(26,26,24,0.12);
+          --border-medium: rgba(26,26,24,0.22);
+          --border-strong: rgba(26,26,24,0.32);
+          --radius-md: 8px;
+          --radius-lg: 12px;
+          --radius-xl: 16px;
+          --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
+        }
+
+        body {
+          font-family: var(--font);
+          font-size: 14px;
+          color: var(--text-primary);
+          background: var(--bg-tertiary);
+          min-height: 100vh;
+        }
+
+        /* ── 앱 레이아웃 ── */
+        .app-header {
+          background: var(--bg-primary);
+          border-bottom: 0.5px solid var(--border-light);
+          padding: 0 24px;
+          display: flex;
+          align-items: center;
+          height: 52px;
+          position: sticky;
+          top: 0;
+          z-index: 100;
+        }
+        .app-header .logo {
+          font-size: 15px;
+          font-weight: 500;
+          color: var(--text-primary);
+          margin-right: 32px;
+        }
+        .app-body {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 24px 24px;
+        }
+
+        /* ── 탭 ── */
+        .nav-tabs {
+          display: flex;
+          gap: 2px;
+          border-bottom: 0.5px solid var(--border-light);
+          margin-bottom: 24px;
+          background: var(--bg-primary);
+          border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+          padding: 0 16px;
+        }
+        .tab-btn {
+          padding: 12px 18px;
+          border: none;
+          background: none;
+          font-size: 13px;
+          font-family: var(--font);
+          color: var(--text-secondary);
+          cursor: pointer;
+          border-bottom: 2px solid transparent;
+          margin-bottom: -0.5px;
+          transition: color .15s;
+          border-radius: 0;
+        }
+        .tab-btn:hover:not(.active) { background: var(--bg-secondary); }
+        .tab-btn.active {
+          color: var(--text-primary);
+          border-bottom-color: var(--text-primary);
+          font-weight: 500;
+        }
+
+        /* ── 화면 ── */
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* ── 카드 ── */
+        .card {
+          background: var(--bg-primary);
+          border: 0.5px solid var(--border-light);
+          border-radius: var(--radius-lg);
+          padding: 18px 20px;
+          margin-bottom: 14px;
+        }
+        .card:last-child { margin-bottom: 0; }
+        .card-title {
+          font-size: 12px;
+          font-weight: 500;
+          color: var(--text-secondary);
+          text-transform: uppercase;
+          letter-spacing: .06em;
+          margin-bottom: 14px;
+          padding-bottom: 10px;
+          border-bottom: 0.5px solid var(--border-light);
+        }
+
+        /* ── 테이블 ── */
+        .tbl-wrap {
+          border: 0.5px solid var(--border-light);
+          border-radius: var(--radius-lg);
+          overflow: hidden;
+          background: var(--bg-primary);
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead tr { background: var(--bg-secondary); }
+        th {
+          padding: 9px 13px;
+          text-align: left;
+          font-weight: 500;
+          font-size: 12px;
+          color: var(--text-secondary);
+          border-bottom: 0.5px solid var(--border-light);
+          white-space: nowrap;
+        }
+        td {
+          padding: 10px 13px;
+          border-bottom: 0.5px solid var(--border-light);
+          color: var(--text-primary);
+          vertical-align: middle;
+        }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover td { background: var(--bg-secondary); cursor: pointer; }
+
+        /* ── 배지 ── */
+        .badge {
+          display: inline-block;
+          padding: 2px 8px;
+          border-radius: 20px;
+          font-size: 11px;
+          font-weight: 500;
+          white-space: nowrap;
+        }
+        .badge-blue { background: var(--bg-info); color: var(--text-info); }
+        .badge-green { background: var(--bg-success); color: var(--text-success); }
+        .badge-amber { background: var(--bg-warning); color: var(--text-warning); }
+        .badge-gray { background: var(--bg-secondary); color: var(--text-secondary); }
+        .badge-danger { background: var(--bg-danger); color: var(--text-danger); }
+
+        /* ── 버튼 ── */
+        .btn-primary {
+          padding: 8px 16px;
+          background: var(--text-primary);
+          color: var(--bg-primary);
+          border: none;
+          border-radius: var(--radius-md);
+          font-size: 13px;
+          font-family: var(--font);
+          font-weight: 500;
+          cursor: pointer;
+          transition: opacity .15s;
+          white-space: nowrap;
+        }
+        .btn-primary:hover { opacity: .82; }
+        .act-btn {
+          font-size: 11px;
+          color: var(--text-secondary);
+          border: 0.5px solid var(--border-medium);
+          background: none;
+          padding: 3px 9px;
+          border-radius: var(--radius-md);
+          cursor: pointer;
+          font-family: var(--font);
+          transition: background .12s;
+        }
+        .act-btn:hover { background: var(--bg-secondary); }
+        .btn-outline {
+          padding: 8px 14px;
+          background: none;
+          color: var(--text-primary);
+          border: 0.5px solid var(--border-medium);
+          border-radius: var(--radius-md);
+          font-size: 13px;
+          font-family: var(--font);
+          cursor: pointer;
+          transition: background .12s;
+          white-space: nowrap;
+        }
+        .btn-outline:hover { background: var(--bg-secondary); }
+
+        /* ── 폼 ── */
+        .form-group {
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+        }
+        .form-group label {
+          font-size: 12px;
+          color: var(--text-secondary);
+          font-weight: 500;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+          padding: 8px 11px;
+          border: 0.5px solid var(--border-medium);
+          border-radius: var(--radius-md);
+          background: var(--bg-primary);
+          color: var(--text-primary);
+          font-family: var(--font);
+          font-size: 13px;
+          outline: none;
+          transition: border-color .15s;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+          border-color: var(--text-primary);
+          box-shadow: 0 0 0 2px rgba(26,26,24,.08);
+        }
+        .form-group textarea { resize: vertical; min-height: 76px; line-height: 1.6; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+        .form-grid .full { grid-column: 1 / -1; }
+        .form-section-title {
+          font-size: 11px;
+          font-weight: 500;
+          color: var(--text-tertiary);
+          text-transform: uppercase;
+          letter-spacing: .07em;
+          margin: 20px 0 12px;
+          padding-bottom: 7px;
+          border-bottom: 0.5px solid var(--border-light);
+        }
+        .form-section-title:first-child { margin-top: 0; }
+        .req { color: var(--text-danger); margin-left: 2px; }
+
+        /* ── 툴바 ── */
+        .toolbar {
+          display: flex;
+          gap: 8px;
+          margin-bottom: 14px;
+          align-items: center;
+          flex-wrap: wrap;
+        }
+        .toolbar input {
+          flex: 1;
+          min-width: 160px;
+          padding: 7px 11px;
+          border: 0.5px solid var(--border-medium);
+          border-radius: var(--radius-md);
+          background: var(--bg-primary);
+          color: var(--text-primary);
+          font-family: var(--font);
+          font-size: 13px;
+          outline: none;
+        }
+        .toolbar input:focus { border-color: var(--text-primary); }
+        .toolbar select {
+          padding: 7px 11px;
+          border: 0.5px solid var(--border-medium);
+          border-radius: var(--radius-md);
+          background: var(--bg-primary);
+          color: var(--text-primary);
+          font-family: var(--font);
+          font-size: 13px;
+          outline: none;
+        }
+
+        /* ── 지표 카드 ── */
+        .metric-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 10px;
+          margin-bottom: 18px;
+        }
+        .metric {
+          background: var(--bg-primary);
+          border: 0.5px solid var(--border-light);
+          border-radius: var(--radius-md);
+          padding: 14px 16px;
+        }
+        .metric-lbl { font-size: 11px; color: var(--text-secondary); }
+        .metric-val { font-size: 24px; font-weight: 500; margin-top: 4px; }
+
+        /* ── 페이지네이션 ── */
+        .pagination {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-top: 14px;
+          font-size: 12px;
+          color: var(--text-secondary);
+        }
+        .page-btns { display: flex; gap: 4px; }
+        .page-btns button { min-width: 30px; }
+        .page-btns button.current {
+          background: var(--bg-secondary);
+          font-weight: 500;
+          color: var(--text-primary);
+        }
+
+        /* ── 상세 레이아웃 ── */
+        .detail-layout {
+          display: grid;
+          grid-template-columns: 1fr 300px;
+          gap: 16px;
+          align-items: start;
+        }
+        .kv-table { width: 100%; }
+        .kv-table td:first-child {
+          color: var(--text-secondary);
+          font-size: 12px;
+          width: 110px;
+          padding: 5px 10px 5px 0;
+          vertical-align: top;
+        }
+        .kv-table td:last-child { font-size: 13px; padding: 5px 0; }
+        .kv-table tr:hover td { background: none; }
+
+        /* ── 빵 부스러기 ── */
+        .breadcrumb {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 12px;
+          color: var(--text-tertiary);
+          margin-bottom: 16px;
+        }
+        .breadcrumb span:last-child { color: var(--text-primary); }
+        .bc-sep { opacity: .4; }
+
+        /* ── 문서 제목 영역 ── */
+        .doc-title-area { margin-bottom: 18px; }
+        .doc-title-area h2 { font-size: 20px; font-weight: 500; margin-bottom: 4px; }
+        .doc-title-area .sub { font-size: 13px; color: var(--text-secondary); }
+        .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+        /* ── 메모 ── */
+        .note-item {
+          padding: 11px 13px;
+          background: var(--bg-secondary);
+          border-radius: var(--radius-md);
+          margin-bottom: 8px;
+          font-size: 13px;
+          line-height: 1.65;
+        }
+        .note-meta { font-size: 11px; color: var(--text-tertiary); margin-top: 5px; }
+
+        /* ── 파일 행 ── */
+        .file-row {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 9px 0;
+          border-bottom: 0.5px solid var(--border-light);
+        }
+        .file-row:last-child { border-bottom: none; }
+        .file-icon {
+          width: 30px; height: 30px;
+          background: var(--bg-info);
+          border-radius: 7px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 9px;
+          font-weight: 600;
+          color: var(--text-info);
+          flex-shrink: 0;
+          letter-spacing: -.2px;
+        }
+        .file-icon.img { background: var(--bg-success); color: var(--text-success); }
+
+        /* ── 드래그 영역 ── */
+        .drop-zone {
+          border: 0.5px dashed var(--border-medium);
+          border-radius: var(--radius-md);
+          padding: 22px;
+          text-align: center;
+          transition: background .15s;
+        }
+        .drop-zone:hover { background: var(--bg-secondary); }
+        .drop-hint { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; }
+
+        /* ── 카테고리 들여쓰기 ── */
+        .cat-indent { padding-left: 28px !important; }
+        .cat-sub-bg { background: rgba(0,0,0,.018); }
+
+        /* ── 태그 입력 ── */
+        .tag-input-wrap { display: flex; gap: 6px; margin-bottom: 12px; }
+        .tag-input-wrap input {
+          flex: 1;
+          padding: 7px 10px;
+          border: 0.5px solid var(--border-medium);
+          border-radius: var(--radius-md);
+          background: var(--bg-primary);
+          color: var(--text-primary);
+          font-family: var(--font);
+          font-size: 13px;
+          outline: none;
+        }
+
+        /* ── 유틸 ── */
+        .section-label {
+          font-size: 11px;
+          font-weight: 500;
+          color: var(--text-tertiary);
+          text-transform: uppercase;
+          letter-spacing: .06em;
+          margin-bottom: 8px;
+        }
+        .text-muted { color: var(--text-secondary); }
+        .text-hint { color: var(--text-tertiary); }
+        .link { color: var(--text-info); text-decoration: none; }
+        .link:hover { text-decoration: underline; }
+        .divider { border: none; border-top: 0.5px solid var(--border-light); margin: 14px 0; }
+
+        /* ── 반응형 ── */
+        @media (max-width: 760px) {
+          .metric-grid { grid-template-columns: repeat(2, 1fr); }
+          .detail-layout, .form-grid + .form-grid { grid-template-columns: 1fr; }
+          .form-grid { grid-template-columns: 1fr; }
+          .form-grid .full { grid-column: 1; }
+          .cat-mgmt-layout { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="app-header">
+    <div class="logo">📚 자료 관리</div>
+    <nav class="nav-tabs" style="border:none; margin:0; padding:0; background:none; border-radius:0;">
+        <button class="tab-btn active" onclick="switchTab('list', this)">목록</button>
+        <button class="tab-btn" onclick="switchTab('detail', this)">상세 페이지</button>
+        <button class="tab-btn" onclick="switchTab('category', this)">카테고리 관리</button>
+        <button class="tab-btn" onclick="switchTab('register', this)">자료 등록</button>
+    </nav>
+</header>
+
+<div class="app-body">
+
+    <!-- ───────────────────────────────────────── 1. 목록 ── -->
+    <div id="list" class="screen active">
+
+        <div class="metric-grid">
+            <div class="metric"><div class="metric-lbl">전체 자료</div><div class="metric-val">142</div></div>
+            <div class="metric"><div class="metric-lbl">이번 달 등록</div><div class="metric-val">8</div></div>
+            <div class="metric"><div class="metric-lbl">독서 완료</div><div class="metric-val">67</div></div>
+            <div class="metric"><div class="metric-lbl">카테고리 수</div><div class="metric-val">12</div></div>
+        </div>
+
+        <div class="toolbar">
+            <input type="text" id="searchInput" placeholder="제목, 저자, 출판사 검색..." oninput="filterTable()">
+            <select id="filterCat" onchange="filterTable()">
+                <option value="">전체 카테고리</option>
+                <option value="도서">도서</option>
+                <option value="논문">논문</option>
+                <option value="아티클">아티클</option>
+            </select>
+            <select id="filterTag" onchange="filterTable()">
+                <option value="">전체 태그</option>
+                <option value="UX">UX</option>
+                <option value="AI">AI</option>
+                <option value="개발">개발</option>
+                <option value="경영">경영</option>
+                <option value="PM">PM</option>
+            </select>
+            <button class="btn-primary" onclick="switchTab('register', document.querySelectorAll('.tab-btn')[3])">+ 자료 등록</button>
+        </div>
+
+        <div class="tbl-wrap">
+            <table id="docTable">
+                <thead>
+                <tr>
+                    <th style="width:36px"><input type="checkbox" id="checkAll" onchange="toggleAll(this)"></th>
+                    <th style="width:220px">제목</th>
+                    <th style="width:90px">카테고리</th>
+                    <th style="width:90px">저자</th>
+                    <th style="width:80px">출판사</th>
+                    <th style="width:80px">독서 시기</th>
+                    <th>태그</th>
+                    <th style="width:150px">한 줄 감상</th>
+                    <th style="width:52px;text-align:center">파일</th>
+                </tr>
+                </thead>
+                <tbody id="docTbody">
+                <tr data-cat="도서" data-tags="UX 기획 디자인">
+                    <td><input type="checkbox"></td>
+                    <td style="font-weight:500; cursor:pointer; color:var(--text-info)" onclick="switchTab('detail', document.querySelectorAll('.tab-btn')[1])">디자인 씽킹 프로세스</td>
+                    <td><span class="badge badge-blue">도서</span></td>
+                    <td>팀 브라운</td>
+                    <td>청림출판</td>
+                    <td class="text-muted">2024.03</td>
+                    <td><span class="badge badge-gray">UX</span> <span class="badge badge-gray">기획</span></td>
+                    <td style="font-size:12px; color:var(--text-secondary)">실무 적용 팁이 많음</td>
+                    <td style="text-align:center; font-size:12px; color:var(--text-info)">PDF</td>
+                </tr>
+                <tr data-cat="도서" data-tags="경영 스타트업">
+                    <td><input type="checkbox"></td>
+                    <td style="font-weight:500; cursor:pointer; color:var(--text-info)" onclick="switchTab('detail', document.querySelectorAll('.tab-btn')[1])">린 스타트업</td>
+                    <td><span class="badge badge-blue">도서</span></td>
+                    <td>에릭 리스</td>
+                    <td>인사이트</td>
+                    <td class="text-muted">2024.01</td>
+                    <td><span class="badge badge-gray">경영</span> <span class="badge badge-gray">스타트업</span></td>
+                    <td style="font-size:12px; color:var(--text-secondary)">MVP 개념이 핵심</td>
+                    <td style="text-align:center">—</td>
+                </tr>
+                <tr data-cat="논문" data-tags="AI 딥러닝">
+                    <td><input type="checkbox"></td>
+                    <td style="font-weight:500; cursor:pointer; color:var(--text-info)" onclick="switchTab('detail', document.querySelectorAll('.tab-btn')[1])">Attention Is All You Need</td>
+                    <td><span class="badge badge-amber">논문</span></td>
+                    <td>Vaswani 외</td>
+                    <td>NeurIPS</td>
+                    <td class="text-muted">2024.02</td>
+                    <td><span class="badge badge-gray">AI</span> <span class="badge badge-gray">딥러닝</span></td>
+                    <td style="font-size:12px; color:var(--text-secondary)">트랜스포머 원본 논문</td>
+                    <td style="text-align:center; font-size:12px; color:var(--text-info)">PDF</td>
+                </tr>
+                <tr data-cat="아티클" data-tags="PM">
+                    <td><input type="checkbox"></td>
+                    <td style="font-weight:500; cursor:pointer; color:var(--text-info)" onclick="switchTab('detail', document.querySelectorAll('.tab-btn')[1])">프로덕트 로드맵 수립 가이드</td>
+                    <td><span class="badge badge-green">아티클</span></td>
+                    <td>김민준</td>
+                    <td>브런치</td>
+                    <td class="text-muted">2024.04</td>
+                    <td><span class="badge badge-gray">PM</span></td>
+                    <td style="font-size:12px; color:var(--text-secondary)">OKR 연계 방법 참고</td>
+                    <td style="text-align:center">—</td>
+                </tr>
+                <tr data-cat="도서" data-tags="개발 리팩토링">
+                    <td><input type="checkbox"></td>
+                    <td style="font-weight:500; cursor:pointer; color:var(--text-info)" onclick="switchTab('detail', document.querySelectorAll('.tab-btn')[1])">클린 코드</td>
+                    <td><span class="badge badge-blue">도서</span></td>
+                    <td>로버트 마틴</td>
+                    <td>인사이트</td>
+                    <td class="text-muted">—</td>
+                    <td><span class="badge badge-gray">개발</span> <span class="badge badge-gray">리팩토링</span></td>
+                    <td style="font-size:12px; color:var(--text-secondary)">미독</td>
+                    <td style="text-align:center">—</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination">
+            <span>총 142개 중 1–5 표시</span>
+            <div class="page-btns">
+                <button class="act-btn">이전</button>
+                <button class="act-btn current">1</button>
+                <button class="act-btn">2</button>
+                <button class="act-btn">3</button>
+                <button class="act-btn">다음</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ─────────────────────────────────────── 2. 상세 ── -->
+    <div id="detail" class="screen">
+
+        <div class="breadcrumb">
+            <span style="cursor:pointer; color:var(--text-info)" onclick="switchTab('list', document.querySelectorAll('.tab-btn')[0])">목록</span>
+            <span class="bc-sep">/</span>
+            <span>도서</span>
+            <span class="bc-sep">/</span>
+            <span>디자인 씽킹 프로세스</span>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px; flex-wrap:wrap; gap:10px;">
+            <div class="doc-title-area" style="margin-bottom:0;">
+                <h2>디자인 씽킹 프로세스</h2>
+                <div class="sub">팀 브라운 · 청림출판 · 2019</div>
+                <div class="tag-list">
+                    <span class="badge badge-blue">도서</span>
+                    <span class="badge badge-gray">UX</span>
+                    <span class="badge badge-gray">기획</span>
+                    <span class="badge badge-gray">디자인</span>
+                </div>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button class="btn-outline">수정</button>
+                <button class="btn-outline" style="color:var(--text-danger); border-color:var(--text-danger);">삭제</button>
+            </div>
+        </div>
+
+        <div class="detail-layout">
+
+            <!-- 왼쪽 메인 -->
+            <div>
+                <div class="card">
+                    <div class="card-title">기본 정보</div>
+                    <table class="kv-table">
+                        <tr><td>저자</td><td>팀 브라운 (Tim Brown)</td></tr>
+                        <tr><td>출판사</td><td>청림출판</td></tr>
+                        <tr><td>출판 시기</td><td>2019년 3월</td></tr>
+                        <tr><td>카테고리</td><td><span class="badge badge-blue">도서</span></td></tr>
+                        <tr><td>출처</td><td><a class="link" href="#">교보문고</a></td></tr>
+                        <tr><td>파일 경로</td><td style="font-size:12px; color:var(--text-secondary); font-family:monospace">/docs/books/2019/design_thinking.pdf</td></tr>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">구매 / 독서 이력</div>
+                    <table class="kv-table">
+                        <tr><td>구매 시기</td><td>2024년 2월 15일</td></tr>
+                        <tr><td>독서 시기</td><td>2024년 3월 1일 — 3월 20일</td></tr>
+                        <tr><td>구매 계기</td><td>팀 내 디자인 씽킹 워크숍 준비를 위해 구매</td></tr>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">한 줄 감상 / 메모</div>
+                    <p style="font-size:13px; line-height:1.75; color:var(--text-primary);">
+                        실무에 바로 적용 가능한 팁이 많고, 특히 프로토타이핑 챕터가 인상적이었음. 팀 브라운 특유의 사례 중심 서술이 이해를 도움.
+                    </p>
+                    <hr class="divider">
+                    <div class="section-label">추가 정보</div>
+                    <p style="font-size:12px; color:var(--text-secondary);">ISBN: 978-89-352-0000-0 · 304페이지</p>
+                </div>
+            </div>
+
+            <!-- 오른쪽 사이드바 -->
+            <div>
+                <div class="card">
+                    <div class="card-title">첨부 파일</div>
+                    <div class="file-row">
+                        <div class="file-icon">PDF</div>
+                        <div style="flex:1;">
+                            <div style="font-size:13px; font-weight:500;">design_thinking.pdf</div>
+                            <div style="font-size:11px; color:var(--text-tertiary);">2024.02.15 · 4.2 MB</div>
+                        </div>
+                        <button class="act-btn">다운로드</button>
+                    </div>
+                    <div class="file-row">
+                        <div class="file-icon img">IMG</div>
+                        <div style="flex:1;">
+                            <div style="font-size:13px; font-weight:500;">cover.jpg</div>
+                            <div style="font-size:11px; color:var(--text-tertiary);">2024.02.15 · 320 KB</div>
+                        </div>
+                        <button class="act-btn">다운로드</button>
+                    </div>
+                    <button style="width:100%; margin-top:10px; padding:7px; border:0.5px dashed var(--border-medium); background:none; border-radius:var(--radius-md); font-size:12px; color:var(--text-secondary); cursor:pointer; font-family:var(--font);">+ 파일 추가</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>메모 (Note)</span>
+                        <button class="act-btn" style="font-size:11px;">+ 추가</button>
+                    </div>
+                    <div class="note-item">
+                        5장 — "실패는 빠를수록 좋다"는 개념이 애자일과 연결됨. 워크숍 슬라이드에 인용할 것.
+                        <div class="note-meta">2024.03.10 작성 · 2024.03.12 수정</div>
+                    </div>
+                    <div class="note-item">
+                        공감 지도(Empathy Map) 템플릿을 팀에 공유하면 좋을 것 같음.
+                        <div class="note-meta">2024.03.18 작성</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- ──────────────────────────────── 3. 카테고리 관리 ── -->
+    <div id="category" class="screen">
+
+        <div class="cat-mgmt-layout" style="display:grid; grid-template-columns:1fr 340px; gap:16px; align-items:start;">
+
+            <!-- 카테고리 테이블 -->
+            <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <div class="section-label" style="margin:0;">카테고리 목록</div>
+                    <button class="btn-primary" style="font-size:12px; padding:7px 13px;" onclick="toggleAddCatForm()">+ 카테고리 추가</button>
+                </div>
+
+                <!-- 추가 폼 (토글) -->
+                <div id="addCatForm" style="display:none; margin-bottom:14px;">
+                    <div class="card" style="margin-bottom:0;">
+                        <div class="card-title">새 카테고리</div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>카테고리명 <span class="req">*</span></label>
+                                <input type="text" id="newCatName" placeholder="예: 인문학">
+                            </div>
+                            <div class="form-group">
+                                <label>상위 카테고리</label>
+                                <select id="newCatParent">
+                                    <option value="">없음 (최상위)</option>
+                                    <option value="1">도서</option>
+                                    <option value="2">논문</option>
+                                    <option value="3">웹 아티클</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:8px; margin-top:12px; justify-content:flex-end;">
+                            <button class="btn-outline" onclick="toggleAddCatForm()">취소</button>
+                            <button class="btn-primary" onclick="addCategory()">저장</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tbl-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th style="width:40px;">ID</th>
+                            <th>카테고리명</th>
+                            <th style="width:110px;">상위 카테고리</th>
+                            <th style="width:64px; text-align:center;">자료 수</th>
+                            <th style="width:90px; text-align:center;">관리</th>
+                        </tr>
+                        </thead>
+                        <tbody id="catTbody">
+                        <tr>
+                            <td class="text-hint">1</td>
+                            <td style="font-weight:500;">📁 도서</td>
+                            <td class="text-hint">—</td>
+                            <td style="text-align:center;">78</td>
+                            <td style="text-align:center;"><div style="display:flex; gap:4px; justify-content:center;"><button class="act-btn">수정</button><button class="act-btn">삭제</button></div></td>
+                        </tr>
+                        <tr class="cat-sub-bg">
+                            <td class="text-hint">4</td>
+                            <td class="cat-indent text-muted">└ 기술/IT</td>
+                            <td><span class="badge badge-gray" style="font-size:10px;">도서</span></td>
+                            <td style="text-align:center;">23</td>
+                            <td style="text-align:center;"><div style="display:flex; gap:4px; justify-content:center;"><button class="act-btn">수정</button><button class="act-btn">삭제</button></div></td>
+                        </tr>
+                        <tr class="cat-sub-bg">
+                            <td class="text-hint">5</td>
+                            <td class="cat-indent text-muted">└ 경영/비즈니스</td>
+                            <td><span class="badge badge-gray" style="font-size:10px;">도서</span></td>
+                            <td style="text-align:center;">31</td>
+                            <td style="text-align:center;"><div style="display:flex; gap:4px; justify-content:center;"><button class="act-btn">수정</button><button class="act-btn">삭제</button></div></td>
+                        </tr>
+                        <tr class="cat-sub-bg">
+                            <td class="text-hint">6</td>
+                            <td class="cat-indent text-muted">└ 자기계발</td>
+                            <td><span class="badge badge-gray" style="font-size:10px;">도서</span></td>
+                            <td style="text-align:center;">24</td>
+                            <td style="text-align:center;"><div style="display:flex; gap:4px; justify-content:center;"><button class="act-btn">수정</button><button class="act-btn">삭제</button></div></td>
+                        </tr>
+                        <tr>
+                            <td class="text-hint">2</td>
+                            <td style="font-weight:500;">📄 논문</td>
+                            <td class="text-hint">—</td>
+                            <td style="text-align:center;">34</td>
+                            <td style="text-align:center;"><div style="display:flex; gap:4px; justify-content:center;"><button class="act-btn">수정</button><button class="act-btn">삭제</button></div></td>
+                        </tr>
+                        <tr>
+                            <td class="text-hint">3</td>
+                            <td style="font-weight:500;">🔗 웹 아티클</td>
+                            <td class="text-hint">—</td>
+                            <td style="text-align:center;">30</td>
+                            <td style="text-align:center;"><div style="display:flex; gap:4px; justify-content:center;"><button class="act-btn">수정</button><button class="act-btn">삭제</button></div></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 태그 관리 사이드바 -->
+            <div class="card" style="margin-bottom:0;">
+                <div class="card-title">태그 관리</div>
+                <div class="tag-input-wrap">
+                    <input type="text" id="newTagInput" placeholder="새 태그 이름..." onkeydown="if(event.key==='Enter')addTag()">
+                    <button class="btn-primary" style="font-size:12px; padding:7px 11px;" onclick="addTag()">추가</button>
+                </div>
+                <div class="tbl-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>태그명</th>
+                            <th style="width:52px; text-align:center;">사용 수</th>
+                            <th style="width:52px; text-align:center;">삭제</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tagTbody">
+                        <tr><td><span class="badge badge-gray">UX</span></td><td style="text-align:center; font-size:12px; color:var(--text-secondary);">12</td><td style="text-align:center;"><button class="act-btn" onclick="removeTag(this)">×</button></td></tr>
+                        <tr><td><span class="badge badge-gray">AI</span></td><td style="text-align:center; font-size:12px; color:var(--text-secondary);">9</td><td style="text-align:center;"><button class="act-btn" onclick="removeTag(this)">×</button></td></tr>
+                        <tr><td><span class="badge badge-gray">경영</span></td><td style="text-align:center; font-size:12px; color:var(--text-secondary);">8</td><td style="text-align:center;"><button class="act-btn" onclick="removeTag(this)">×</button></td></tr>
+                        <tr><td><span class="badge badge-gray">개발</span></td><td style="text-align:center; font-size:12px; color:var(--text-secondary);">15</td><td style="text-align:center;"><button class="act-btn" onclick="removeTag(this)">×</button></td></tr>
+                        <tr><td><span class="badge badge-gray">PM</span></td><td style="text-align:center; font-size:12px; color:var(--text-secondary);">6</td><td style="text-align:center;"><button class="act-btn" onclick="removeTag(this)">×</button></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- ──────────────────────────────────── 4. 자료 등록 ── -->
+    <div id="register" class="screen">
+
+        <div style="display:grid; grid-template-columns:1fr 300px; gap:16px; align-items:start;">
+
+            <!-- 왼쪽 폼 -->
+            <div class="card" style="margin-bottom:0;">
+
+                <div class="form-section-title">기본 정보</div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>제목 <span class="req">*</span></label>
+                        <input type="text" id="regTitle" placeholder="자료 제목을 입력하세요">
+                    </div>
+                    <div class="form-group">
+                        <label>분류 (카테고리) <span class="req">*</span></label>
+                        <select id="regCategory">
+                            <option value="">카테고리 선택</option>
+                            <option>도서</option>
+                            <option>도서 — 기술/IT</option>
+                            <option>도서 — 경영/비즈니스</option>
+                            <option>도서 — 자기계발</option>
+                            <option>논문</option>
+                            <option>웹 아티클</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>저자 / 작성자</label>
+                        <input type="text" id="regAuthor" placeholder="저자명">
+                    </div>
+                    <div class="form-group">
+                        <label>출판사</label>
+                        <input type="text" id="regPublisher" placeholder="출판사 또는 매체명">
+                    </div>
+                    <div class="form-group">
+                        <label>출판 / 게시 시기</label>
+                        <input type="text" id="regPublishedAt" placeholder="예: 2024.03">
+                    </div>
+                    <div class="form-group">
+                        <label>출처 (URL 등)</label>
+                        <input type="text" id="regSource" placeholder="https://...">
+                    </div>
+                </div>
+
+                <div class="form-section-title">구매 / 독서 기록</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>구매 시기</label>
+                        <input type="text" id="regPurchasedAt" placeholder="예: 2024.04.01">
+                    </div>
+                    <div class="form-group">
+                        <label>독서한 시기</label>
+                        <input type="text" id="regReadAt" placeholder="예: 2024.04 — 2024.05">
+                    </div>
+                    <div class="form-group full">
+                        <label>구매 계기 / 이유 / 목적</label>
+                        <textarea id="regPurpose" placeholder="이 자료를 구매하거나 수집한 이유를 적어주세요"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section-title">감상 / 메모</div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>한 줄 감상</label>
+                        <input type="text" id="regMemo" placeholder="핵심 인상을 한 문장으로">
+                    </div>
+                    <div class="form-group full">
+                        <label>추가 정보</label>
+                        <textarea id="regExtraInfo" placeholder="ISBN, 페이지 수, 링크 등 기타 정보"></textarea>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 오른쪽 사이드바 -->
+            <div style="display:flex; flex-direction:column; gap:12px;">
+
+                <div class="card" style="margin-bottom:0;">
+                    <div class="card-title">태그</div>
+                    <div class="tag-list" id="selectedTags" style="margin-bottom:10px; min-height:24px;">
+                        <span class="badge badge-blue" style="cursor:pointer;" onclick="removeSelectedTag(this)">UX ×</span>
+                        <span class="badge badge-gray" style="cursor:pointer;" onclick="removeSelectedTag(this)">기획 ×</span>
+                    </div>
+                    <input type="text" id="tagSearch" placeholder="태그 검색 또는 추가..." style="width:100%; padding:7px 10px; border:0.5px solid var(--border-medium); border-radius:var(--radius-md); background:var(--bg-primary); color:var(--text-primary); font-family:var(--font); font-size:13px; outline:none;" onkeydown="if(event.key==='Enter')addTagToDoc()">
+                    <div style="margin-top:8px; display:flex; flex-wrap:wrap; gap:5px;" id="tagSuggest">
+                        <span class="badge badge-gray" style="cursor:pointer;" onclick="pickTag(this)">AI</span>
+                        <span class="badge badge-gray" style="cursor:pointer;" onclick="pickTag(this)">경영</span>
+                        <span class="badge badge-gray" style="cursor:pointer;" onclick="pickTag(this)">개발</span>
+                        <span class="badge badge-gray" style="cursor:pointer;" onclick="pickTag(this)">PM</span>
+                        <span class="badge badge-gray" style="cursor:pointer;" onclick="pickTag(this)">딥러닝</span>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom:0;">
+                    <div class="card-title">파일 첨부</div>
+                    <div class="drop-zone" id="dropZone">
+                        <div class="drop-hint">파일을 이곳에 드래그하거나</div>
+                        <button class="act-btn" onclick="document.getElementById('fileInput').click()">파일 선택</button>
+                        <input type="file" id="fileInput" style="display:none;" multiple onchange="handleFiles(this.files)">
+                    </div>
+                    <div id="fileList" style="margin-top:8px;"></div>
+                    <div style="margin-top:6px; font-size:11px; color:var(--text-tertiary);">PDF, EPUB, JPG, PNG 지원 · 최대 50MB</div>
+                </div>
+
+                <div class="card" style="margin-bottom:0;">
+                    <div class="card-title">파일 저장 위치</div>
+                    <input type="text" id="regFilePath" placeholder="/docs/books/2024/..." style="width:100%; padding:7px 10px; border:0.5px solid var(--border-medium); border-radius:var(--radius-md); background:var(--bg-primary); color:var(--text-primary); font-family:var(--font); font-size:13px; outline:none;">
+                    <div style="margin-top:6px; font-size:11px; color:var(--text-tertiary);">로컬 경로 또는 클라우드 경로 입력</div>
+                </div>
+
+                <div style="display:flex; gap:8px;">
+                    <button class="btn-outline" style="flex:1; padding:10px;" onclick="saveDraft()">임시 저장</button>
+                    <button class="btn-primary" style="flex:1; padding:10px;" onclick="submitForm()">등록 완료</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div><!-- /app-body -->
+
+<!-- 토스트 알림 -->
+<div id="toast" style="
+  position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(60px);
+  background:var(--text-primary); color:var(--bg-primary);
+  padding:10px 20px; border-radius:var(--radius-lg);
+  font-size:13px; font-family:var(--font);
+  opacity:0; transition:all .25s; pointer-events:none; white-space:nowrap; z-index:999;">
+</div>
+
+<script>
+    /* ── 탭 전환 ── */
+    function switchTab(id, btnEl) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      if (btnEl) btnEl.classList.add('active');
+    }
+
+    /* ── 토스트 ── */
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.opacity = '1';
+      t.style.transform = 'translateX(-50%) translateY(0)';
+      setTimeout(() => {
+        t.style.opacity = '0';
+        t.style.transform = 'translateX(-50%) translateY(60px)';
+      }, 2200);
+    }
+
+    /* ── 목록 검색/필터 ── */
+    function filterTable() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const cat = document.getElementById('filterCat').value;
+      const tag = document.getElementById('filterTag').value;
+      document.querySelectorAll('#docTbody tr').forEach(tr => {
+        const text = tr.textContent.toLowerCase();
+        const trCat = tr.dataset.cat || '';
+        const trTags = tr.dataset.tags || '';
+        const matchQ = !q || text.includes(q);
+        const matchCat = !cat || trCat === cat;
+        const matchTag = !tag || trTags.includes(tag);
+        tr.style.display = (matchQ && matchCat && matchTag) ? '' : 'none';
+      });
+    }
+
+    function toggleAll(cb) {
+      document.querySelectorAll('#docTbody input[type=checkbox]').forEach(c => c.checked = cb.checked);
+    }
+
+    /* ── 카테고리 관리 ── */
+    function toggleAddCatForm() {
+      const f = document.getElementById('addCatForm');
+      f.style.display = f.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function addCategory() {
+      const name = document.getElementById('newCatName').value.trim();
+      const parent = document.getElementById('newCatParent');
+      const parentName = parent.options[parent.selectedIndex].text;
+      if (!name) { showToast('카테고리명을 입력해 주세요.'); return; }
+      const tbody = document.getElementById('catTbody');
+      const newId = tbody.rows.length + 1;
+      const isChild = parent.value !== '';
+      const tr = document.createElement('tr');
+      if (isChild) tr.className = 'cat-sub-bg';
+      tr.innerHTML = `
+        <td class="text-hint">${newId}</td>
+        <td ${isChild ? 'class="cat-indent text-muted"' : 'style="font-weight:500;"'}>${isChild ? '└ ' : '📁 '}${name}</td>
+        <td>${isChild ? `<span class="badge badge-gray" style="font-size:10px;">${parentName}</span>` : '<span class="text-hint">—</span>'}</td>
+        <td style="text-align:center;">0</td>
+        <td style="text-align:center;"><div style="display:flex;gap:4px;justify-content:center;"><button class="act-btn">수정</button><button class="act-btn">삭제</button></div></td>`;
+      tbody.appendChild(tr);
+      document.getElementById('newCatName').value = '';
+      toggleAddCatForm();
+      showToast(`"${name}" 카테고리가 추가되었습니다.`);
+    }
+
+    /* ── 태그 관리 ── */
+    function addTag() {
+      const input = document.getElementById('newTagInput');
+      const name = input.value.trim();
+      if (!name) return;
+      const tbody = document.getElementById('tagTbody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><span class="badge badge-gray">${name}</span></td>
+        <td style="text-align:center;font-size:12px;color:var(--text-secondary);">0</td>
+        <td style="text-align:center;"><button class="act-btn" onclick="removeTag(this)">×</button></td>`;
+      tbody.appendChild(tr);
+      input.value = '';
+      showToast(`태그 "${name}"가 추가되었습니다.`);
+    }
+
+    function removeTag(btn) {
+      const name = btn.closest('tr').querySelector('.badge').textContent;
+      if (confirm(`"${name}" 태그를 삭제하시겠습니까?`)) {
+        btn.closest('tr').remove();
+        showToast(`태그 "${name}"가 삭제되었습니다.`);
+      }
+    }
+
+    /* ── 등록 화면 태그 ── */
+    function pickTag(el) {
+      const name = el.textContent;
+      const container = document.getElementById('selectedTags');
+      const exists = [...container.querySelectorAll('.badge')].some(b => b.textContent.replace(' ×','') === name);
+      if (exists) return;
+      const span = document.createElement('span');
+      span.className = 'badge badge-blue';
+      span.style.cursor = 'pointer';
+      span.textContent = name + ' ×';
+      span.onclick = function() { this.remove(); };
+      container.appendChild(span);
+    }
+
+    function addTagToDoc() {
+      const input = document.getElementById('tagSearch');
+      if (input.value.trim()) { pickTag({ textContent: input.value.trim() }); input.value = ''; }
+    }
+
+    function removeSelectedTag(el) { el.remove(); }
+
+    /* ── 파일 처리 ── */
+    function handleFiles(files) {
+      const list = document.getElementById('fileList');
+      [...files].forEach(f => {
+        const ext = f.name.split('.').pop().toUpperCase();
+        const size = (f.size / 1024 / 1024).toFixed(1);
+        const div = document.createElement('div');
+        div.className = 'file-row';
+        div.innerHTML = `
+          <div class="file-icon">${ext}</div>
+          <div style="flex:1;"><div style="font-size:13px;font-weight:500;">${f.name}</div>
+          <div style="font-size:11px;color:var(--text-tertiary);">${size} MB</div></div>
+          <button class="act-btn" onclick="this.closest('.file-row').remove()">삭제</button>`;
+        list.appendChild(div);
+      });
+    }
+
+    /* ── 드래그 앤 드롭 ── */
+    const dz = document.getElementById('dropZone');
+    dz.addEventListener('dragover', e => { e.preventDefault(); dz.style.background = 'var(--bg-secondary)'; });
+    dz.addEventListener('dragleave', () => { dz.style.background = ''; });
+    dz.addEventListener('drop', e => {
+      e.preventDefault();
+      dz.style.background = '';
+      handleFiles(e.dataTransfer.files);
+    });
+
+    /* ── 등록 폼 제출 ── */
+    function submitForm() {
+      const title = document.getElementById('regTitle').value.trim();
+      const cat = document.getElementById('regCategory').value;
+      if (!title) { showToast('제목은 필수 항목입니다.'); document.getElementById('regTitle').focus(); return; }
+      if (!cat) { showToast('카테고리를 선택해 주세요.'); document.getElementById('regCategory').focus(); return; }
+      showToast('자료가 등록되었습니다!');
+      setTimeout(() => switchTab('list', document.querySelectorAll('.tab-btn')[0]), 700);
+    }
+
+    function saveDraft() { showToast('임시 저장되었습니다.'); }
+</script>
+</body>
+</html>
