@@ -3,7 +3,6 @@ package com.susuproject.MomsLibrary.model;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,20 +27,23 @@ public class DocumentEntity {
     @Column(name = "author")
     private String author;              // 저자/작성자
 
+    @Column(name = "publisher")
+    private String publisher;           // 출판사
+
     @Column(name="published_at")
-    private String publishedAt;      // 출판/게시 시기
+    private String publishedAt;         // 출판/게시 시기
 
     @Column(name="purchased_at")
-    private String purchasedAt;      // 구매 시기
+    private String purchasedAt;         // 구매 시기
 
     @Column(name = "purpose")
     private String purpose;             // 구매 계기/이유/목적
 
     @Column(name = "read_at")
-    private String readAt;           // 독서한 시기
+    private String readAt;              // 독서한 시기
 
     @Column(name = "source")
-    private String source;              // 출처
+    private String source;              // 출처(해당 정보를 알게된 루트, 정보의 신뢰성에 영향을 줌.)
 
     @Column(name = "memo")
     private String memo;                // 한 줄 메모
@@ -67,7 +69,7 @@ public class DocumentEntity {
     }
 
     // JPA 표준에 따른 기본 생성자
-    protected DocumentEntity() {}
+    public DocumentEntity() {}
 
     // 객체 생성을 위한 생성자
     public DocumentEntity(String title, CategoryEntity category) {
@@ -75,15 +77,49 @@ public class DocumentEntity {
         this.category = category;
     }
 
-    public Integer getId() {
-        return id;
-    }
+    // getter / setter
+    public Integer getId() { return id;}
+    public void setId(Integer id) { this.id = id;}
 
-    public String getTitle() {
-        return title;
-    }
+    public CategoryEntity getCategory() { return category; }
+    public void setCategory(CategoryEntity category) { this.category = category; }
 
-    public String getAuthor() {
-        return author;
-    }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+
+    public String getAuthor() { return author; }
+    public void setAuthor(String author) { this.author = author;}
+
+    public String getPublisher() { return publisher;}
+    public void setPublisher(String publisher) { this.publisher = publisher; }
+
+    public String getPublishedAt() { return publishedAt; }
+    public void setPublishedAt(String publishedAt) { this.publishedAt = publishedAt; }
+
+    public String getPurchasedAt() { return purchasedAt; }
+    public void setPurchasedAt(String purchasedAt) { this.purchasedAt = purchasedAt; }
+
+    public String getPurpose() { return purpose; }
+    public void setPurpose(String purpose) { this.purpose = purpose; }
+
+    public String getReadAt() { return readAt; }
+    public void setReadAt(String readAt) { this.readAt = readAt; }
+
+    public String getSource() { return source; }
+    public void setSource(String source) { this.source = source; }
+
+    public String getMemo() { return memo; }
+    public void setMemo(String memo) { this.memo = memo; }
+
+    public String getExtraInfo() { return extraInfo; }
+    public void setExtraInfo(String extraInfo) { this.extraInfo = extraInfo; }
+
+    public String getFilePath() { return filePath; }
+    public void setFilePath(String filePath) { this.filePath = filePath; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public List<DocumentTagEntity> getDocumentTags() { return documentTags; }
+    public void setDocumentTags(List<DocumentTagEntity> documentTags) { this.documentTags = documentTags; }
 }
