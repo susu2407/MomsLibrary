@@ -2,8 +2,6 @@ package com.susuproject.MomsLibrary.controller;
 // URL 받아서 Service 호출하고 화면으로 넘겨주는 역할
 
 import com.susuproject.MomsLibrary.dto.DocumentDto;
-import com.susuproject.MomsLibrary.model.DocumentEntity;
-import com.susuproject.MomsLibrary.repository.DocumentRepository;
 import com.susuproject.MomsLibrary.service.DocumentService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,8 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-
-import javax.swing.text.Document;
 
 @Controller
 public class DocumentController {
