@@ -1,5 +1,6 @@
 package com.susuproject.MomsLibrary.service;
 
+import com.susuproject.MomsLibrary.dto.DocumentDto;
 import com.susuproject.MomsLibrary.model.CategoryEntity;
 import com.susuproject.MomsLibrary.model.DocumentEntity;
 import com.susuproject.MomsLibrary.repository.DocumentRepository;
@@ -20,24 +21,20 @@ public class DocumentService {
     }
 
 
-    //자료 전체 목록 조회 (최신순) - 첫 화면 출력용
-    public List<DocumentEntity> getAllDocuments() {
-        return documentRepository.findAllByOrderByCreatedAtDesc();
-    }
-
     //자료 등록 (code 자동 생성 포함)
     @Transactional
-    public DocumentEntity createDocument(DocumentEntity documentEntity) {
-        return documentRepository.save(documentEntity);
+    public void createDocument(DocumentDto dto) {
+        DocumentEntity documentEntity = toEntity(dto);
+        documentRepository.save(documentEntity);
     }
 
     //자료 수정 + 예외처리
     @Transactional
-    public DocumentEntity updateDocument(DocumentEntity documentEntity) {
+    public void updateDocument(DocumentEntity documentEntity) {
         if (documentEntity.getId() == null) {
             throw new IllegalArgumentException("존재하지 않는 자료입니다. 수정이 불가합니다.");
         }
-        return documentRepository.save(documentEntity);
+        documentRepository.save(documentEntity);
     }
 
     //자료 삭제
@@ -46,10 +43,25 @@ public class DocumentService {
         documentRepository.findById(id).ifPresent(documentRepository::delete);
     }
 
-    // ------ 검색 ----------------------------------------
-    //제목으로 검색
-    public List<DocumentEntity> searchTitleDocument(String title) {
-        return documentRepository.findByTitleContaining(title);
+    // ------ 검색 / 조회 ----------------------------------------
+    //자료 전체 목록 조회 (최신순) - 첫 화면 출력용
+    public List<DocumentEntity> getAllDocuments() {
+        return documentRepository.findAllByOrderByCreatedAtDesc();
+    }
+
+    // ID 조회: Entity → DTO 변환
+    public DocumentDto findById(Integer id) {
+        DocumentEntity entity = documentRepository.findById(id)
+                .orElseThrow(()->new RuntimeException("없는 자료입니다."));
+        return toDto(entity);   // Entity → DTO 변환해서 반환
+    }
+
+    //제목으로 검색: Entity → DTO 변환
+    public List<DocumentDto> searchTitleDocument() {
+        return documentRepository.findAllByOrderByCreatedAtDesc()
+                .stream()
+                .map(this::toDto)   // Entity 리스트 → DTO 리스트 변환
+                .toList();
     }
 
     //저자로 검색
@@ -74,6 +86,42 @@ public class DocumentService {
                 Sort.by(Sort.Direction.DESC, "createdAt")           // 최신순
                         .and(Sort.by(Sort.Direction.ASC, "title"))  // 제목 가나다순
         );
+    }
+
+
+    // DTO → Entity (등록/수정할 때 사용)
+    private DocumentEntity toEntity(DocumentDto dto) {
+        DocumentEntity entity = new DocumentEntity();
+        entity.setTitle(dto.getTitle());
+        entity.setAuthor(dto.getAuthor());
+        entity.setPublisher(dto.getPublisher());
+        entity.setPublishedAt(dto.getPublishedAt());
+        entity.setPurchasedAt(dto.getPurchasedAt());
+        entity.setReadAt(dto.getReadAt());
+        entity.setPurpose(dto.getPurpose());
+        entity.setMemo(dto.getMemo());
+        entity.setExtraInfo(dto.getExtraInfo());
+        entity.setFilePath(dto.getFilePath());
+        entity.setSource(dto.getSource());
+        return entity;
+    }
+
+    // Entity → DTO (화면에 전달할 때 사용)
+    private DocumentDto toDto(DocumentEntity entity) {
+        DocumentDto dto = new DocumentDto();
+        dto.setId(entity.getId());
+        dto.setTitle(entity.getTitle());
+        dto.setAuthor(entity.getAuthor());
+        dto.setPublisher(entity.getPublisher());
+        dto.setPublishedAt(entity.getPublishedAt());
+        dto.setPurchasedAt(entity.getPurchasedAt());
+        dto.setReadAt(entity.getReadAt());
+        dto.setPurpose(entity.getPurpose());
+        dto.setMemo(entity.getMemo());
+        dto.setExtraInfo(entity.getExtraInfo());
+        dto.setFilePath(entity.getFilePath());
+        dto.setSource(entity.getSource());
+        return dto;
     }
 
 }

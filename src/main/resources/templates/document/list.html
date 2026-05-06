@@ -1,29 +1,95 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>전체목록</title>
+    <title>자료 목록</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/document.css}">
 </head>
 <body>
-<div>
-    <h1>자료 목록</h1>
-    <table border="1">
-        <thead>
+<div th:replace="~{fragment/header :: header}"></div>
+
+<div class="app-body">
+
+    <!-- 지표 카드 - 일단 하드코딩, 나중에 연결 -->
+    <div class="metric-grid">
+        <div class="metric">
+            <div class="metric-lbl">전체 자료</div>
+            <div class="metric-val" th:text="${documents.size()}">0</div>
+        </div>
+        <div class="metric">
+            <div class="metric-lbl">이번 달 등록</div>
+            <div class="metric-val">-</div>
+        </div>
+        <div class="metric">
+            <div class="metric-lbl">독서 완료</div>
+            <div class="metric-val">-</div>
+        </div>
+        <div class="metric">
+            <div class="metric-lbl">카테고리 수</div>
+            <div class="metric-val">-</div>
+        </div>
+    </div>
+
+    <!-- 툴바 -->
+    <div class="toolbar">
+        <input type="text" id="searchInput" placeholder="제목, 저자, 출판사 검색...">
+        <a th:href="@{/documents/new}" class="btn-primary">+ 자료 등록</a>
+    </div>
+
+    <!-- 테이블 -->
+    <div class="tbl-wrap">
+        <table>
+            <thead>
             <tr>
-                <th>ID</th>
-                <th>제목</th>
-                <th>저자</th>
+                <th style="width:36px"><input type="checkbox"></th>
+                <th style="width:220px">제목</th>
+                <th style="width:90px">카테고리</th>
+                <th style="width:90px">저자</th>
+                <th style="width:80px">출판사</th>
+                <th style="width:80px">독서 시기</th>
+                <th style="width:150px">한 줄 감상</th>
             </tr>
-        </thead>
-        <tbody>
-            <tr th:each="doc : ${documents}">
-                <td th:text="${doc.id}">1</td>
-                <td th:text="${doc.title}">제목</td>
-                <td th:text="${doc.author}">저자</td>
+            </thead>
+            <tbody>
+
+            <!-- 데이터 없을 때 -->
+            <tr th:if="${documents.isEmpty()}">
+                <td colspan="7" style="text-align:center; padding:40px; color:var(--text-secondary)">
+                    등록된 자료가 없습니다.
+                </td>
             </tr>
-        </tbody>
-    </table>
+
+            <!-- 데이터 있을 때 - DB에서 받아온 documents 리스트 반복 -->
+            <tr th:each="doc : ${documents}" th:unless="${documents.isEmpty()}">
+                <td><input type="checkbox"></td>
+                <td>
+                    <!-- 제목 클릭하면 상세 페이지로 이동 -->
+                    <a th:href="@{/documents/{id}(id=${doc.id})}"
+                       th:text="${doc.title}"
+                       style="font-weight:500; color:var(--text-info)">
+                    </a>
+                </td>
+                <td>
+                    <span class="badge badge-gray"
+                          th:text="${doc.category != null ? doc.category.name : '-'}">
+                    </span>
+                </td>
+                <td th:text="${doc.author} ?: '-'"></td>
+                <td th:text="${doc.publisher} ?: '-'"></td>
+                <td th:text="${doc.readAt} ?: '-'" class="text-muted"></td>
+                <td th:text="${doc.memo} ?: '-'"
+                    style="font-size:12px; color:var(--text-secondary)">
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+
 </div>
 
+<script th:src="@{/js/common.js}"></script>
+<script th:src="@{/js/document-list.js}"></script>
 </body>
 </html>
