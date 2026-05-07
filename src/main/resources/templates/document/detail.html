@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${document.title}">자료 상세</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/document.css}">
+</head>
+<body>
+
+<div th:replace="~{fragment/header :: header}"></div>
+
+<div class="app-body">
+
+    <div class="breadcrumb">
+        <a th:href="@{/documents}" class="link">목록</a>
+        <span class="bc-sep">/</span>
+        <span th:text="${document.title}"></span>
+    </div>
+
+    <!-- 제목 영역 -->
+    <div style="display:flex; justify-content:space-between;
+                align-items:flex-start; margin-bottom:18px;">
+        <div class="doc-title-area" style="margin-bottom:0;">
+            <h2 th:text="${document.title}">제목</h2>
+            <div class="sub">
+                <span th:text="${document.author} ?: '-'"></span>
+                ·
+                <span th:text="${document.publisher} ?: '-'"></span>
+            </div>
+            <div class="tag-list" style="margin-top:8px;">
+                <span class="badge badge-blue"
+                      th:text="${document.categoryName} ?: '미분류'">
+                </span>
+            </div>
+        </div>
+        <!-- 수정/삭제 버튼 -->
+        <div style="display:flex; gap:8px;">
+            <a th:href="@{/documents/{id}/edit(id=${document.id})}"
+               class="btn-outline">수정</a>
+            <form th:action="@{/documents/{id}/delete(id=${document.id})}"
+                  method="post"
+                  onsubmit="return confirm('정말 삭제하시겠습니까?')">
+                <button type="submit"
+                        class="btn-outline"
+                        style="color:var(--text-danger);
+                               border-color:var(--text-danger);">삭제</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="detail-layout">
+
+        <!-- 왼쪽 메인 -->
+        <div>
+            <div class="card">
+                <div class="card-title">기본 정보</div>
+                <table class="kv-table">
+                    <tr>
+                        <td>저자</td>
+                        <td th:text="${document.author} ?: '-'"></td>
+                    </tr>
+                    <tr>
+                        <td>출판사</td>
+                        <td th:text="${document.publisher} ?: '-'"></td>
+                    </tr>
+                    <tr>
+                        <td>출판 시기</td>
+                        <td th:text="${document.publishedAt} ?: '-'"></td>
+                    </tr>
+                    <tr>
+                        <td>카테고리</td>
+                        <td th:text="${document.categoryName} ?: '미분류'">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>출처</td>
+                        <td th:text="${document.source} ?: '-'"></td>
+                    </tr>
+                    <tr>
+                        <td>파일 경로</td>
+                        <td th:text="${document.filePath} ?: '-'"
+                            style="font-size:12px; font-family:monospace;">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="card-title">구매 / 독서 이력</div>
+                <table class="kv-table">
+                    <tr>
+                        <td>구매 시기</td>
+                        <td th:text="${document.purchasedAt} ?: '-'"></td>
+                    </tr>
+                    <tr>
+                        <td>독서 시기</td>
+                        <td th:text="${document.readAt} ?: '-'"></td>
+                    </tr>
+                    <tr>
+                        <td>구매 계기</td>
+                        <td th:text="${document.purpose} ?: '-'"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="card-title">한 줄 감상 / 메모</div>
+                <p th:text="${document.memo} ?: '작성된 감상이 없습니다.'"
+                   style="font-size:13px; line-height:1.75;">
+                </p>
+                <hr class="divider">
+                <div class="section-label">추가 정보</div>
+                <p th:text="${document.extraInfo} ?: '-'"
+                   style="font-size:12px; color:var(--text-secondary);">
+                </p>
+            </div>
+        </div>
+
+        <!-- 오른쪽 사이드바 -->
+        <div>
+            <div class="card">
+                <div class="card-title">등록 정보</div>
+                <table class="kv-table">
+                    <tr>
+                        <td>등록일</td>
+                        <td th:text="${document.createdAt} ?: '-'">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script th:src="@{/js/common.js}"></script>
+</body>
+</html>
