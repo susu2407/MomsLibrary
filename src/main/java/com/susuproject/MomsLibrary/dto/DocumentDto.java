@@ -17,6 +17,8 @@ public class DocumentDto {
     private String filePath;
     private String source;
 
+    private String categoryName;
+
     // 기본 생성자
     public DocumentDto() {}
 
@@ -62,4 +64,7 @@ public class DocumentDto {
 
     public String getSource() { return source; }
     public void setSource(String source) { this.source = source; }
+
+    public String getCategoryName() {return categoryName;}
+    public void setCategoryName(String categoryName) {this.categoryName = categoryName;}
 }
