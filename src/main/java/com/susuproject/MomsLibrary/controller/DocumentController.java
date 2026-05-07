@@ -15,12 +15,11 @@ public class DocumentController {
 
     // 'Service 호출하고'-> Service 접근 객체(변경 불가(final) + 생성자 주입
     private final DocumentService documentService;
-
     public DocumentController(DocumentService documentService) {
         this.documentService = documentService;
     }
 
-    // ───────────────── 자료 목록 화면
+    // ───────────────── 자료 목록 ─────────────────
     @GetMapping("/documents")   // http://localhost:8080/documents
     public String documentList(Model model) {
         model.addAttribute("documents", documentService.getAllDocuments());
@@ -58,11 +57,21 @@ public class DocumentController {
     }
 
     // 수정 처리
+    @PostMapping("/documents/{id}/edit")
+    public String updateDocument(@PathVariable Integer id,
+                                 @ModelAttribute DocumentDto dto) {
+        documentService.updateDocument(id, dto);
+        return "redirect:/documents/" + id;
+    }
 
+    // ───────────────── 자료 삭제 (팝업으로 확인 창 열어서, 재확인 과정) ─────────────────
+    @PostMapping("/documents/{id}/delete")
+    public String deleteDocument(@PathVariable Integer id) {
+        documentService.deleteDocument(id);
+        return "redirect:/documents";
+    }
 
-    // ───────────────── 자료 삭제 (팝업으로 확인 창 열어서, 재확인 과정)
-
-    // ───────────────── 자료 검색
+    // ───────────────── 자료 검색 ─────────────────
     // ───────────────── 자료 필터
     // ───────────────── 자료 정렬
 }
