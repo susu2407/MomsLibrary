@@ -8,6 +8,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -20,30 +22,46 @@ public class DocumentService {
         this.documentRepository = documentRepository;
     }
 
-
+    // ───────────────── 등록 ─────────────────
     //자료 등록 (code 자동 생성 포함)
     @Transactional
     public void createDocument(DocumentDto dto) {
-        DocumentEntity documentEntity = toEntity(dto);
-        documentRepository.save(documentEntity);
+        DocumentEntity entity = toEntity(dto);
+        // 등록일 직접 세팅
+        entity.setCreatedAt(
+                LocalDateTime.now()
+                        .format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"))
+        );
+        documentRepository.save(entity);
     }
 
+    // ───────────────── 수정 ─────────────────
     //자료 수정 + 예외처리
     @Transactional
-    public void updateDocument(DocumentEntity documentEntity) {
-        if (documentEntity.getId() == null) {
-            throw new IllegalArgumentException("존재하지 않는 자료입니다. 수정이 불가합니다.");
-        }
-        documentRepository.save(documentEntity);
+    public void updateDocument(Integer id, DocumentDto dto) {
+        DocumentEntity entity = documentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 자료입니다. 수정이 불가능합니다."));
+        entity.setTitle(dto.getTitle());
+        entity.setAuthor(dto.getAuthor());
+        entity.setPublisher(dto.getPublisher());
+        entity.setPublishedAt(dto.getPublishedAt());
+        entity.setPurchasedAt(dto.getPurchasedAt());
+        entity.setReadAt(dto.getReadAt());
+        entity.setPurpose(dto.getPurpose());
+        entity.setMemo(dto.getMemo());
+        entity.setExtraInfo(dto.getExtraInfo());
+        entity.setFilePath(dto.getFilePath());
+        entity.setSource(dto.getSource());
     }
 
+    // ───────────────── 삭제 ─────────────────
     //자료 삭제
     @Transactional
     public void deleteDocument(Integer id) {
         documentRepository.findById(id).ifPresent(documentRepository::delete);
     }
 
-    // ------ 검색 / 조회 ----------------------------------------
+    // ───────────────── 검색 / 조회 ─────────────────
     //자료 전체 목록 조회 (최신순) - 첫 화면 출력용
     public List<DocumentEntity> getAllDocuments() {
         return documentRepository.findAllByOrderByCreatedAtDesc();
@@ -52,7 +70,7 @@ public class DocumentService {
     // ID 조회: Entity → DTO 변환
     public DocumentDto findById(Integer id) {
         DocumentEntity entity = documentRepository.findById(id)
-                .orElseThrow(()->new RuntimeException("없는 자료입니다."));
+                .orElseThrow(() -> new RuntimeException("없는 자료입니다."));
         return toDto(entity);   // Entity → DTO 변환해서 반환
     }
 
@@ -79,7 +97,7 @@ public class DocumentService {
         return documentRepository.findByCategory(category);
     }
 
-    // ------ 정렬 -----------------------------------------
+    // ───────────────── 정렬 ─────────────────
     // 동적 코드 사용해보기
     public List<DocumentEntity> orderByOptionDocument() {
         return documentRepository.findAll(
@@ -88,7 +106,7 @@ public class DocumentService {
         );
     }
 
-
+    // ───────────────── 데이터 변환 ─────────────────
     // DTO → Entity (등록/수정할 때 사용)
     private DocumentEntity toEntity(DocumentDto dto) {
         DocumentEntity entity = new DocumentEntity();
@@ -121,6 +139,11 @@ public class DocumentService {
         dto.setExtraInfo(entity.getExtraInfo());
         dto.setFilePath(entity.getFilePath());
         dto.setSource(entity.getSource());
+        dto.setCreatedAt(entity.getCreatedAt());
+        dto.setCategoryId(entity.getCategory() != null ?
+                entity.getCategory().getId() : null);
+        dto.setCategoryName(entity.getCategory() != null ?
+                entity.getCategory().getName() : null);
         return dto;
     }
 
