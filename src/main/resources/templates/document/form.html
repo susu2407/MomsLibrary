@@ -41,14 +41,26 @@
 
                     <div class="form-group">
                         <label>분류 (카테고리) <span class="req">*</span></label>
-                        <select id="regCategory">
+                        <select name="categoryId" id="regCategory">
                             <option value="">카테고리 선택</option>
-                            <option th:each="category : ${categories}"
-                            th:value="${category.id}"
-                            th:text="${category.name}"
-                            th:selected="${document.document.categoryId == category.id}">
 
-                            </option>
+                            <!-- 상취 카테고리 (parent_id가 null인 것) -->
+                            <th:block th:each="cat : ${categories}"
+                                      th:if="${cat.parent == null}">
+
+                                <!-- 상위 카테고리 자체도 선택 가능 -->
+                                    <option th:value="${cat.id}"
+                                            th:text="${cat.name}"
+                                            th:selected="${document.categoryId != null and document.categoryId == cat.id}"></option>>
+
+                                    <!-- 하위 카테고리 : 상위명 / 하위명 형식 -->
+                                    <option th:each="sub : ${categories}"
+                                            th:if="${sub.parent != null and sub.parent.id == cat.id}"
+                                            th:value="${sub.id}"
+                                            th:text="${cat.name + ' / ' + sub.name}"
+                                            th:selected="${document.categoryId != null and document.categoryId == sub.id}"></option>
+
+                            </th:block>
                         </select>
                     </div>
 
