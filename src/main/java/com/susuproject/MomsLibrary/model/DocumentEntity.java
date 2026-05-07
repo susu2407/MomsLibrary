@@ -54,12 +54,13 @@ public class DocumentEntity {
     @Column(name = "file_path")
     private String filePath;            // 파일 위치
 
-    @CreationTimestamp
     @Column(name = "created_at")
-    private LocalDateTime createdAt;    // 등록일
+    private String createdAt;           // 등록일
 
     // Document와 Tag를 연결을 위한 사전 작업
-    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "document",
+            cascade = CascadeType.REMOVE,   // Document 삭제 시 연결 정보만 삭제
+            orphanRemoval = true)
     private List<DocumentTagEntity> documentTags = new ArrayList<>();
 
     //  Document와 Tag를 연결하는 편의 메서드
@@ -117,8 +118,8 @@ public class DocumentEntity {
     public String getFilePath() { return filePath; }
     public void setFilePath(String filePath) { this.filePath = filePath; }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public String getCreatedAt() { return createdAt; }
+    public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
 
     public List<DocumentTagEntity> getDocumentTags() { return documentTags; }
     public void setDocumentTags(List<DocumentTagEntity> documentTags) { this.documentTags = documentTags; }
