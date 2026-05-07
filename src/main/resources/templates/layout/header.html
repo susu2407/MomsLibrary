@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<header th:fragment="header" class="app-header">
+    <div class="logo">📚 자료 관리</div>
+    <nav class="nav-tabs">
+        <a class="tab-btn" th:href="@{/documents}">목록</a>
+        <a class="tab-btn" th:href="@{/documents/new}">자료 등록</a>
+        <a class="tab-btn" th:href="@{/categories}">카테고리 관리</a>
+    </nav>
+</header>
+
+</body>
+</html>
