@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${mode == 'register'} ? '자료 등록' : '자료 수정'">자료 폼</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/document.css}">
+</head>
+<body>
+
+<div th:replace="~{fragment/header :: header}"></div>
+
+<div class="app-body">
+
+    <div class="breadcrumb">
+        <a th:href="@{/documents}" class="link">목록</a>
+        <span class="bc-sep">/</span>
+        <span th:text="${mode == 'register'} ? '자료 등록' : '자료 수정'"></span>
+    </div>
+
+    <form th:action="${mode == 'register'} ?
+                      @{/documents/new} :
+                      @{/documents/{id}/edit(id=${document.id})}"
+          method="post">
+
+        <div style="display:grid; grid-template-columns:1fr 300px;
+                    gap:16px; align-items:start;">
+
+            <!-- 왼쪽 폼 -->
+            <div class="card" style="margin-bottom:0;">
+
+                <div class="form-section-title">기본 정보</div>
+                <div class="form-grid">
+
+                    <div class="form-group full">
+                        <label>제목 <span class="req">*</span></label>
+                        <input type="text" name="title"
+                               th:value="${document.title}"
+                               placeholder="자료 제목을 입력하세요" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>저자 / 작성자</label>
+                        <input type="text" name="author"
+                               th:value="${document.author}"
+                               placeholder="저자명">
+                    </div>
+
+                    <div class="form-group">
+                        <label>출판사</label>
+                        <input type="text" name="publisher"
+                               th:value="${document.publisher}"
+                               placeholder="출판사 또는 매체명">
+                    </div>
+
+                    <div class="form-group">
+                        <label>출판 / 게시 시기</label>
+                        <input type="text" name="publishedAt"
+                               th:value="${document.publishedAt}"
+                               placeholder="예: 2024.03">
+                    </div>
+
+                    <div class="form-group">
+                        <label>출처</label>
+                        <input type="text" name="source"
+                               th:value="${document.source}"
+                               placeholder="https://...">
+                    </div>
+
+                </div>
+
+                <div class="form-section-title">구매 / 독서 기록</div>
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label>구매 시기</label>
+                        <input type="text" name="purchasedAt"
+                               th:value="${document.purchasedAt}"
+                               placeholder="예: 2024.04.01">
+                    </div>
+
+                    <div class="form-group">
+                        <label>독서한 시기</label>
+                        <input type="text" name="readAt"
+                               th:value="${document.readAt}"
+                               placeholder="예: 2024.04 — 2024.05">
+                    </div>
+
+                    <div class="form-group full">
+                        <label>구매 계기 / 목적</label>
+                        <textarea name="purpose"
+                                  placeholder="구매하거나 수집한 이유를 적어주세요"
+                                  th:text="${document.purpose}"></textarea>
+                    </div>
+
+                </div>
+
+                <div class="form-section-title">감상 / 메모</div>
+                <div class="form-grid">
+
+                    <div class="form-group full">
+                        <label>한 줄 감상</label>
+                        <input type="text" name="memo"
+                               th:value="${document.memo}"
+                               placeholder="핵심 인상을 한 문장으로">
+                    </div>
+
+                    <div class="form-group full">
+                        <label>추가 정보</label>
+                        <textarea name="extraInfo"
+                                  placeholder="ISBN, 페이지 수 등"
+                                  th:text="${document.extraInfo}"></textarea>
+                    </div>
+
+                    <div class="form-group full">
+                        <label>파일 저장 위치</label>
+                        <input type="text" name="filePath"
+                               th:value="${document.filePath}"
+                               placeholder="/docs/books/2024/...">
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 오른쪽 사이드바 -->
+            <div style="display:flex; flex-direction:column; gap:12px;">
+                <div style="display:flex; gap:8px;">
+                    <a th:href="@{/documents}" class="btn-outline"
+                       style="flex:1; text-align:center; padding:10px;">
+                        취소
+                    </a>
+                    <button type="submit" class="btn-primary"
+                            style="flex:1; padding:10px;"
+                            th:text="${mode == 'register'} ? '등록 완료' : '수정 완료'">
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<script th:src="@{/js/common.js}"></script>
+<script th:src="@{/js/document-form.js}"></script>
+</body>
+</html>
