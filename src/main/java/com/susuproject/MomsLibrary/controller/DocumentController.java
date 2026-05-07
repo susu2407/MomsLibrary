@@ -2,6 +2,7 @@ package com.susuproject.MomsLibrary.controller;
 // URL 받아서 Service 호출하고 화면으로 넘겨주는 역할
 
 import com.susuproject.MomsLibrary.dto.DocumentDto;
+import com.susuproject.MomsLibrary.service.CategoryService;
 import com.susuproject.MomsLibrary.service.DocumentService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,8 +16,12 @@ public class DocumentController {
 
     // 'Service 호출하고'-> Service 접근 객체(변경 불가(final) + 생성자 주입
     private final DocumentService documentService;
-    public DocumentController(DocumentService documentService) {
+    private final CategoryService categoryService;
+
+    public DocumentController(DocumentService documentService,
+                              CategoryService categoryService) {
         this.documentService = documentService;
+        this.categoryService = categoryService;
     }
 
     // ───────────────── 자료 목록 ─────────────────
@@ -38,6 +43,10 @@ public class DocumentController {
     public String registerForm(Model model) {
         model.addAttribute("document", new DocumentDto());
         model.addAttribute("mode", "register");     // 등록 모드
+
+        // 카테고리 목록을 함께 넘기기
+        model.addAttribute("categories", categoryService.getAllCategories());
+
         return "document/form";
     }
     // 등록처리
@@ -53,6 +62,10 @@ public class DocumentController {
     public String editForm(@PathVariable Integer id, Model model) {
         model.addAttribute("document", documentService.findById(id));
         model.addAttribute("mode", "edit");         // 수정 모드
+
+        // 카테고리 목록을 함께 넘기기
+        model.addAttribute("categories", categoryService.getAllCategories());
+
         return "document/form";                                             // 같은 파일 재사용
     }
 
