@@ -1,10 +1,13 @@
+// 문서 등록에 필요한 데이터
 package com.susuproject.MomsLibrary.dto;
+
+import java.util.List;
 
 public class DocumentDto {
 
     private Integer id;
     private Integer categoryId;
-    private String title;       // 필수
+    private String title;
     private String author;
     private String publisher;
     private String publishedAt;
@@ -18,6 +21,10 @@ public class DocumentDto {
     private String source;
 
     private String categoryName;
+
+    private List<Integer> tagIds;   // 기존 태그 선택용
+    private List<String> newTags;   // 새 태그 추가용 (Tag 테이블 저장 후 DocumentTag에 연결)
+
 
     // 기본 생성자
     public DocumentDto() {}
@@ -67,4 +74,11 @@ public class DocumentDto {
 
     public String getCategoryName() {return categoryName;}
     public void setCategoryName(String categoryName) {this.categoryName = categoryName;}
+
+    public List<Integer> getTagIds() { return tagIds; }
+    public void setTagIds(List<Integer> tagIds) { this.tagIds = tagIds; }
+
+    public List<String> getNewTags() { return newTags; }
+    public void setNewTags(List<String> newTags) { this.newTags = newTags; }
+
 }

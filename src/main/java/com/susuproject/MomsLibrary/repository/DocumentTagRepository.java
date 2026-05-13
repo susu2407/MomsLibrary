@@ -18,4 +18,7 @@ public interface DocumentTagRepository extends JpaRepository<DocumentTagEntity,I
     // 특정 Tag가 연결된 Document 목록 조회
     List<DocumentTagEntity> findByTag (TagEntity tag);
 
+    // 수정 시 기존 태그 전부 삭제
+    void deleteByDocument (DocumentEntity document);
+
 }

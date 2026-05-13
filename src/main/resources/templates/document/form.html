@@ -59,7 +59,6 @@
                                             th:value="${sub.id}"
                                             th:text="${cat.name + ' / ' + sub.name}"
                                             th:selected="${document.categoryId != null and document.categoryId == sub.id}"></option>
-
                             </th:block>
                         </select>
                     </div>
@@ -137,21 +136,61 @@
                                   th:text="${document.extraInfo}"></textarea>
                     </div>
 
-                    <div class="form-group full">
-                        <label>파일 저장 위치</label>
-                        <input type="text" name="filePath"
-                               th:value="${document.filePath}"
-                               placeholder="/docs/books/2024/...">
-                    </div>
-
                 </div>
             </div>
 
-            <!-- 오른쪽 사이드바 -->
+            <!-- 오른쪽 폼 -->
             <div style="display:flex; flex-direction:column; gap:12px;">
+                <!-- 태그 -->
+                <div class="card" style="margin-bottom:0;">
+                    <div class="card-title">태그</div>
+                    <div class="tag-list" id="selectedTags"
+                         style="margin-bottom:10px; min-height:24px;">
+                    </div>
+                    <input type="text" id="tagSearch" placeholder="태그 검색 또는 추가..."
+                           style="width:100%; padding:7px 10px; border:0.5px solid var(--border-medium); border-radius:var(--radius-md); background:var(--bg-primary); color:var(--text-primary); font-family:var(--font); font-size:13px; outline:none;"
+                           onkeydown="if(event.key==='Enter'){event.preventDefault();addTagToDocument(event)}">
+                    <div style="margin-top:8px; display:flex; flex-wrap:wrap; gap:5px;" id="tagSuggest">
+                        <span th:each="tag : ${tags}"
+                              class="badge badge-gray"
+                              style="cursor:pointer;"
+                              th:text="${tag.name}"
+                              th:attr="data-id=${tag.id}"
+                              onclick="pickTag(this)">
+
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 파일 첨부(하드코딩) -->
+                <div class="card" style="margin-bottom:0;">
+                    <div class="card-title">파일 첨부</div>
+                    <div class="drop-zone" id="dropZone">
+                        <div class="drop-hint">파일을 이곳에 드래그하거나</div>
+                        <button type="button" class="act-btn"
+                                onclick="document.getElementById('fileInput').click()">
+                            파일 선택
+                        </button>
+                        <input type="file" id="fileInput" style="display:none;" multiple onchange="handleFiles(this.files)">
+                    </div>
+                    <div id="fileList" style="margin-top:8px;"></div>
+                    <div style="margin-top:6px; font-size:11px; color:var(--text-tertiary);">PDF, EPUB, JPG, PNG 지원 · 최대 50MB</div>
+                </div>
+
+                <!-- 파일 저장 위치/경로 -->
+                <div class="card" style="margin-bottom:0;">
+                    <div class="card-title">파일 저장 위치</div>
+                    <input type="text" name="filePath"
+                           th:value="${document.filePath}"
+                           placeholder="/docs/books/2024/..." style="width:100%; padding:7px 10px; border:0.5px solid var(--border-medium); border-radius:var(--radius-md); background:var(--bg-primary); color:var(--text-primary); font-family:var(--font); font-size:13px; outline:none;">
+                    <div style="margin-top:6px; font-size:11px; color:var(--text-tertiary);">
+                        로컬 경로 또는 클라우드 경로 입력
+                    </div>
+                </div>
+
                 <div style="display:flex; gap:8px;">
                     <a th:href="@{/documents}" class="btn-outline"
-                       style="flex:1; text-align:center; padding:10px;">
+                       style="flex:1; text-align:center; padding:10px; text-decoration: none;">
                         취소
                     </a>
                     <button type="submit" class="btn-primary"

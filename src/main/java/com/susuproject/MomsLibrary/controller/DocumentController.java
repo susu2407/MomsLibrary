@@ -4,6 +4,8 @@ package com.susuproject.MomsLibrary.controller;
 import com.susuproject.MomsLibrary.dto.DocumentDto;
 import com.susuproject.MomsLibrary.service.CategoryService;
 import com.susuproject.MomsLibrary.service.DocumentService;
+import com.susuproject.MomsLibrary.service.DocumentTagService;
+import com.susuproject.MomsLibrary.service.TagService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,11 +19,17 @@ public class DocumentController {
     // 'Service 호출하고'-> Service 접근 객체(변경 불가(final) + 생성자 주입
     private final DocumentService documentService;
     private final CategoryService categoryService;
+    private final DocumentTagService documentTagService;
+    private final TagService tagService;
 
     public DocumentController(DocumentService documentService,
-                              CategoryService categoryService) {
+                              CategoryService categoryService,
+                              DocumentTagService documentTagService,
+                              TagService tagService) {
         this.documentService = documentService;
         this.categoryService = categoryService;
+        this.documentTagService = documentTagService;
+        this.tagService = tagService;
     }
 
     // ───────────────── 자료 목록 ─────────────────
@@ -41,18 +49,22 @@ public class DocumentController {
     // 등록 폼 요청
     @GetMapping("/documents/new")
     public String registerForm(Model model) {
+
         model.addAttribute("document", new DocumentDto());
         model.addAttribute("mode", "register");     // 등록 모드
 
         // 카테고리 목록을 함께 넘기기
         model.addAttribute("categories", categoryService.getAllCategories());
 
+        // 태그 목록을 함께 넘기기
+        model.addAttribute("tags", tagService.findAll());
+
         return "document/form";
     }
     // 등록처리
     @PostMapping("/documents/new")
     public String registerProcessing (@ModelAttribute DocumentDto dto) {
-        documentService.createDocument(dto); // 반환값 없이 호출만
+        documentService.createDocument(dto);
         return "redirect:/documents";        // 목록 URL로 이동 (새로고침 방지)
     }
 
@@ -65,6 +77,9 @@ public class DocumentController {
 
         // 카테고리 목록을 함께 넘기기
         model.addAttribute("categories", categoryService.getAllCategories());
+
+        // 태그 목록을 함께 넘기기
+        model.addAttribute("tags", tagService.findAll());
 
         return "document/form";                                             // 같은 파일 재사용
     }

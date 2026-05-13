@@ -3,6 +3,7 @@ package com.susuproject.MomsLibrary.service;
 import com.susuproject.MomsLibrary.dto.DocumentDto;
 import com.susuproject.MomsLibrary.model.CategoryEntity;
 import com.susuproject.MomsLibrary.model.DocumentEntity;
+import com.susuproject.MomsLibrary.model.TagEntity;
 import com.susuproject.MomsLibrary.repository.DocumentRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Sort;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,21 +20,55 @@ public class DocumentService {
     // DB 접근 객체(변경 불가(final)) + 생성자 주입
     private final DocumentRepository documentRepository;
 
-    public DocumentService(DocumentRepository documentRepository) {
+    private final TagService tagService;
+    private final DocumentTagService documentTagService;
+
+    public DocumentService(DocumentRepository documentRepository,
+                           TagService tagService,
+                           DocumentTagService documentTagService) {
         this.documentRepository = documentRepository;
+        this.tagService = tagService;
+        this.documentTagService = documentTagService;
     }
 
     // ───────────────── 등록 ─────────────────
     //자료 등록 (code 자동 생성 포함)
     @Transactional
     public void createDocument(DocumentDto dto) {
-        DocumentEntity entity = toEntity(dto);
+
+        // 1. document 저장
+        DocumentEntity document = toEntity(dto);
+
         // 등록일 직접 세팅
-        entity.setCreatedAt(
+        document.setCreatedAt(
                 LocalDateTime.now()
                         .format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"))
         );
-        documentRepository.save(entity);
+
+        documentRepository.save(document);
+
+        // 2. 기존 + 신규 태그 합치기
+        List<Integer> tagIds = new ArrayList<>();
+
+        if (dto.getTagIds() != null) {
+            tagIds.addAll(dto.getTagIds());
+        }
+
+        if (dto.getNewTags() != null) {
+            for (String name : dto.getNewTags()) {
+
+                // 공백 방지
+                if (name == null || name.trim().isEmpty()) {
+                    continue;
+                }
+
+                TagEntity tag = tagService.createdTag(name);
+                tagIds.add(tag.getId());
+            }
+        }
+
+        // 3. DocumentTag 연결
+        documentTagService.saveDocumentTags(document.getId(), tagIds);
     }
 
     // ───────────────── 수정 ─────────────────
