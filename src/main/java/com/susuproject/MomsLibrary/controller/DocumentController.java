@@ -6,8 +6,12 @@ import com.susuproject.MomsLibrary.service.CategoryService;
 import com.susuproject.MomsLibrary.service.DocumentService;
 import com.susuproject.MomsLibrary.service.DocumentTagService;
 import com.susuproject.MomsLibrary.service.TagService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,7 +36,7 @@ public class DocumentController {
         this.tagService = tagService;
     }
 
-    // ───────────────── 자료 목록 ─────────────────
+    // ────────────────────────────────── 자료 목록 
     @GetMapping("/documents")   // http://localhost:8080/documents
     public String documentList(Model model) {
         model.addAttribute("documents", documentService.getAllDocuments());
@@ -45,7 +49,7 @@ public class DocumentController {
         return "document/detail";
     }
 
-    // ───────────────── 자료 등록 ─────────────────
+    // ────────────────────────────────── 자료 등록 
     // 등록 폼 요청
     @GetMapping("/documents/new")
     public String registerForm(Model model) {
@@ -63,12 +67,23 @@ public class DocumentController {
     }
     // 등록처리
     @PostMapping("/documents/new")
-    public String registerProcessing (@ModelAttribute DocumentDto dto) {
+    public String registerProcessing (@Valid @ModelAttribute("document") DocumentDto dto,
+                                      BindingResult bindingResult,
+                                      Model model) {
+
+        if (bindingResult.hasErrors()) {
+            //검증 실패 시, 폼 화면으로 다시 돌아가면서 카테고리/태그 목록도 다시 넘겨줘야 함
+            model.addAttribute("mode", "register");
+            model.addAttribute("categories", categoryService.getAllCategories());
+            model.addAttribute("tags", tagService.findAll());
+            return "document/form";
+        }
+
         documentService.createDocument(dto);
         return "redirect:/documents";        // 목록 URL로 이동 (새로고침 방지)
     }
 
-    // ───────────────── 자료 수정 ─────────────────
+    // ────────────────────────────────── 자료 수정 
     // 수정 폼 요청
     @GetMapping("/documents/{id}/edit")
     public String editForm(@PathVariable Integer id, Model model) {
@@ -87,12 +102,23 @@ public class DocumentController {
     // 수정 처리
     @PostMapping("/documents/{id}/edit")
     public String updateDocument(@PathVariable Integer id,
-                                 @ModelAttribute DocumentDto dto) {
+                                 @Valid @ModelAttribute("document") DocumentDto dto,
+                                 BindingResult bindingResult,
+                                 Model model) {
+
+        if (bindingResult.hasErrors()) {
+            // 검증 실패 시, 수정 폼으로 다시 돌아가면서 필요한 데이터 재구성
+            model.addAttribute("mode", "edit");
+            model.addAttribute("categories", categoryService.getAllCategories());
+            model.addAttribute("categories", tagService.findAll());
+            return "document/form";
+        }
+
         documentService.updateDocument(id, dto);
         return "redirect:/documents/" + id;
     }
 
-    // ───────────────── 자료 삭제 (팝업으로 확인 창 열어서, 재확인 과정) ─────────────────
+    // ────────────────────────────────── 자료 삭제 (팝업으로 확인 창 열어서, 재확인 과정) 
     @PostMapping("/documents/{id}/delete")
     public String deleteDocument(@PathVariable Integer id) {
         documentService.deleteDocument(id);

@@ -3,11 +3,19 @@ package com.susuproject.MomsLibrary.dto;
 
 import java.util.List;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class DocumentDto {
 
     private Integer id;
+
+    @NotNull(message = "카테고리를 선택해 주세요.")
     private Integer categoryId;
+
+    @NotBlank(message = "제목은 필수 항목입니다.")
     private String title;
+    
     private String author;
     private String publisher;
     private String publishedAt;

@@ -1,6 +1,7 @@
 package com.susuproject.MomsLibrary.service;
 
 import com.susuproject.MomsLibrary.dto.DocumentDto;
+import com.susuproject.MomsLibrary.exception.DocumentNotFoundException;
 import com.susuproject.MomsLibrary.model.CategoryEntity;
 import com.susuproject.MomsLibrary.model.DocumentEntity;
 import com.susuproject.MomsLibrary.model.TagEntity;
@@ -57,7 +58,7 @@ public class DocumentService {
     public void updateDocument(Integer id, DocumentDto dto) {
         // 1. 수정 대상 조회 (없으면 예외)
         DocumentEntity entity = documentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 자료입니다. 수정이 불가능합니다."));
+                .orElseThrow(() -> new DocumentNotFoundException(id));
         
         // 2. dto 값으로 기존 entity 필드 덮어쓰기
         entity.setTitle(dto.getTitle());
@@ -112,7 +113,7 @@ public class DocumentService {
     // ID 조회: Entity → DTO 변환
     public DocumentDto findById(Integer id) {
         DocumentEntity entity = documentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("없는 자료입니다."));
+                .orElseThrow(() -> new DocumentNotFoundException(id));
         return toDto(entity);   // Entity → DTO 변환해서 반환
     }
 

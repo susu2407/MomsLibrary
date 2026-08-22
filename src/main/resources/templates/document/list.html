@@ -10,6 +10,9 @@
 <div th:replace="~{fragment/header :: header}"></div>
 
 <div class="app-body">
+    <div th:if="${errorMessage}" class="badge badge-danger" style="display:block; padding:10px; margin-bottom:14px;">
+        <span th:text="${errorMessage}"></span>
+    </div>
 
     <!-- 지표 카드 - 일단 하드코딩, 나중에 연결 -->
     <div class="metric-grid">
