@@ -34,5 +34,11 @@ public class GlobalExceptionHandler {
                                     RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
         return "redirect:/categories";
-    }   
+    }
+
+    @ExceptionHandler(CategoryHasChildrenException.class)
+    public String handleCategoryHasChildren(CategoryHasChildrenException ex, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        return "redirect:/categories";
+    }
 }
