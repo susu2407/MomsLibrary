@@ -21,4 +21,18 @@ public class GlobalExceptionHandler {
         // 목록 화면으로 리다이렉트
         return "redirect:/documents";
     }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public String handleCategoryNotFound(CategoryNotFoundException ex,
+                                        RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        return "redirect:/categories";
+    }
+
+    @ExceptionHandler(TagNotFoundException.class)
+    public String handleTagNotFound(TagNotFoundException ex,
+                                    RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        return "redirect:/categories";
+    }   
 }

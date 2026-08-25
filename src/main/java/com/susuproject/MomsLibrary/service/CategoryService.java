@@ -1,5 +1,6 @@
 package com.susuproject.MomsLibrary.service;
 
+import com.susuproject.MomsLibrary.exception.CategoryNotFoundException;
 import com.susuproject.MomsLibrary.model.CategoryEntity;
 import com.susuproject.MomsLibrary.repository.CategoryRepository;
 import jakarta.transaction.Transactional;
@@ -44,8 +45,13 @@ public class CategoryService {
     // 카테고리 수정 + 예외처리
     @Transactional
     public CategoryEntity updateCategory(CategoryEntity categoryEntity) {
-        if (categoryEntity.getId() == null) {
-            throw new IllegalArgumentException("존재하지 않는 자료입니다. 수정이 불가합니다.");
+        Integer id = categoryEntity.getId();
+
+        if (id == null) {
+            throw new IllegalArgumentException("수정할 카테고리의 id가 없습니다.");
+        }
+        if (!categoryRepository.existsById(id)) {
+            throw new CategoryNotFoundException(id);
         }
         return categoryRepository.save(categoryEntity);
     }
@@ -54,7 +60,7 @@ public class CategoryService {
     @Transactional
     public void deleteCategory(Integer id) {
         if (!categoryRepository.existsById(id)) {
-            throw new IllegalArgumentException("해당 " + id + "를 가진 카테고리가 존재하지 않습니다.");
+            throw new CategoryNotFoundException(id);
         }
         categoryRepository.deleteById(id);
     }
