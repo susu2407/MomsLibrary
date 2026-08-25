@@ -89,7 +89,7 @@ public class DocumentService {
             for (String name : newTagNames) {
                 if (name == null || name.trim().isEmpty()) continue;    // 공백 방지
                 TagEntity tag = tagService.createdTag(name);
-                tagIds.add(tag.getId());
+                allTagIds.add(tag.getId());
             }
         }
 
