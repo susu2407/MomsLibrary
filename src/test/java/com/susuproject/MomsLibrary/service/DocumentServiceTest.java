@@ -18,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.susuproject.MomsLibrary.dto.DocumentDto;
 import com.susuproject.MomsLibrary.exception.DocumentNotFoundException;
@@ -78,6 +79,7 @@ public class DocumentServiceTest {
 
         // Given: "새태그"라는 이름으로 생성 요청이 오면, id=3인 TagEntity가 만들어졌다고 가정
         TagEntity newTag = new TagEntity("새태그");
+        
         // TagEntity의 id는 DB가 채워주는 값이라, 테스트에서는 리플렉션 없이 직접 세팅이 어려움
         // -> tagService.createdTag()가 이 객체를 반환한다고만 약속하고, id는 getter 결과로 확인
         given(tagService.createdTag("새태그")).willReturn(newTag);
@@ -86,7 +88,7 @@ public class DocumentServiceTest {
         given(documentRepository.save(any(DocumentEntity.class)))
                 .willAnswer(invocation -> {
                     DocumentEntity saved = invocation.getArgument(0);
-                    saved.setId(10);
+                    ReflectionTestUtils.setField(saved, "id", 10);
                     return saved;
                     });
 
@@ -119,7 +121,7 @@ public class DocumentServiceTest {
         given(documentRepository.save(any(DocumentEntity.class)))
                 .willAnswer(invocation -> {
                     DocumentEntity saved = invocation.getArgument(0);
-                    saved.setId(10);
+                    ReflectionTestUtils.setField(saved, "id", 10);
                     return saved;
                 });
         

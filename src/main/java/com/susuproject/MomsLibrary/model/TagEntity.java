@@ -22,8 +22,7 @@ public class TagEntity {
         this.name = name;
     }
 
-    public Integer getId() {
-        return id;
-    }
+    public Integer getId() { return id;}
+    
     public String getName() { return name;}
 }
