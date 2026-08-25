@@ -2,6 +2,7 @@ package com.susuproject.MomsLibrary.service;
 
 import com.susuproject.MomsLibrary.exception.TagNotFoundException;
 import com.susuproject.MomsLibrary.model.TagEntity;
+import com.susuproject.MomsLibrary.repository.DocumentTagRepository;
 import com.susuproject.MomsLibrary.repository.TagRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -13,9 +14,12 @@ public class TagService {
 
     // DB 연결 + 생성자
     private final TagRepository tagRepository;
+    private final DocumentTagRepository documentTagRepository;
 
-    public TagService(TagRepository tagRepository) {
+    public TagService(TagRepository tagRepository,
+                      DocumentTagRepository documentTagRepository) {
         this.tagRepository = tagRepository;
+        this.documentTagRepository = documentTagRepository;
     }
 
     //전체 태그 목록 조회
@@ -50,7 +54,11 @@ public class TagService {
     //태그 삭제 + 예외처리
     @Transactional
     public void deletedTag(String name) {
-        TagEntity tagEntity = tagRepository.findByName(name).orElseThrow(() -> new TagNotFoundException(name));
+        TagEntity tagEntity = tagRepository.findByName(name)
+                .orElseThrow(() -> new TagNotFoundException(name));
+
+        // 연결된 DocumentTag 먼저 삭제 (cascade)
+        documentTagRepository.deleteByTag(tagEntity);
 
         tagRepository.delete(tagEntity);
     }
