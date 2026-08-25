@@ -1,8 +1,12 @@
 package com.susuproject.MomsLibrary.service;
 
+import com.susuproject.MomsLibrary.exception.CategoryHasChildrenException;
 import com.susuproject.MomsLibrary.exception.CategoryNotFoundException;
 import com.susuproject.MomsLibrary.model.CategoryEntity;
+import com.susuproject.MomsLibrary.model.DocumentEntity;
 import com.susuproject.MomsLibrary.repository.CategoryRepository;
+import com.susuproject.MomsLibrary.repository.DocumentRepository;
+
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -13,10 +17,13 @@ public class CategoryService {
 
     // DB 접근 객체 - 변경 불가(final)
     private final CategoryRepository categoryRepository;
+    private final DocumentRepository documentRepository;
 
-    // 생성자 주입 - Spring이 자동으로 CategoryRepository를 넣어줌
-    public CategoryService(CategoryRepository categoryRepository) {
+    // 생성자 주입 - Spring이 자동으로 넣어줌
+    public CategoryService(CategoryRepository categoryRepository, 
+                           DocumentRepository documentRepository) {
         this.categoryRepository = categoryRepository;
+        this.documentRepository = documentRepository;
     }
 
 
@@ -59,9 +66,24 @@ public class CategoryService {
     // 카테고리 삭제 + 예외처리
     @Transactional
     public void deleteCategory(Integer id) {
-        if (!categoryRepository.existsById(id)) {
-            throw new CategoryNotFoundException(id);
+        // 이 카테고리가 존재하는가
+        CategoryEntity categoryE = categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundException(id));
+        
+        // 1. 하위 카테고리가 있으면 삭제 금지
+        List<CategoryEntity> children = categoryRepository.findByParent(categoryE);
+        if (!children.isEmpty()) {
+            throw new CategoryHasChildrenException(id);
         }
-        categoryRepository.deleteById(id);
+
+        // 2. 이 카테고리를 쓰던 자료들 -> category_id를 null
+        List<DocumentEntity> documents = documentRepository.findByCategory(categoryE);
+        for (DocumentEntity document : documents) {
+            document.setCategory(null);
+            documentRepository.save(document);
+        }
+
+        // 3. 카테고리 삭제
+        categoryRepository.delete(categoryE);
     }
 }
