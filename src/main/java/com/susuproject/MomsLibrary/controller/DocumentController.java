@@ -110,7 +110,7 @@ public class DocumentController {
             // 검증 실패 시, 수정 폼으로 다시 돌아가면서 필요한 데이터 재구성
             model.addAttribute("mode", "edit");
             model.addAttribute("categories", categoryService.getAllCategories());
-            model.addAttribute("categories", tagService.findAll());
+            model.addAttribute("tags", tagService.findAll());
             return "document/form";
         }
 
