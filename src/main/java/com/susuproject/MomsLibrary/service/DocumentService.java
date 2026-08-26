@@ -1,10 +1,12 @@
 package com.susuproject.MomsLibrary.service;
 
 import com.susuproject.MomsLibrary.dto.DocumentDto;
+import com.susuproject.MomsLibrary.exception.CategoryNotFoundException;
 import com.susuproject.MomsLibrary.exception.DocumentNotFoundException;
 import com.susuproject.MomsLibrary.model.CategoryEntity;
 import com.susuproject.MomsLibrary.model.DocumentEntity;
 import com.susuproject.MomsLibrary.model.TagEntity;
+import com.susuproject.MomsLibrary.repository.CategoryRepository;
 import com.susuproject.MomsLibrary.repository.DocumentRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Sort;
@@ -20,14 +22,17 @@ public class DocumentService {
 
     // DB 접근 객체(변경 불가(final)) + 생성자 주입
     private final DocumentRepository documentRepository;
+    private final CategoryRepository categoryRepository;
 
     private final TagService tagService;
     private final DocumentTagService documentTagService;
 
     public DocumentService(DocumentRepository documentRepository,
+                           CategoryRepository categoryRepository,
                            TagService tagService,
                            DocumentTagService documentTagService) {
         this.documentRepository = documentRepository;
+        this.categoryRepository = categoryRepository;
         this.tagService = tagService;
         this.documentTagService = documentTagService;
     }
@@ -73,12 +78,24 @@ public class DocumentService {
         entity.setFilePath(dto.getFilePath());
         entity.setSource(dto.getSource());
 
+        // 카테고리 실제 조회해서 세팅(미분류 선택 시 null 허용)
+        if (dto.getCategoryId() != null) {
+            CategoryEntity category = categoryRepository.findById(dto.getCategoryId())
+                    .orElseThrow(() -> new CategoryNotFoundException(dto.getCategoryId()));
+            entity.setCategory(category);
+        } else {
+            entity.setCategory(null);
+        }
+
         // 3. 기존 + 신규 캐그 처리 (등록/수정 공통 로직 호출)
         assignTags(entity.getId(), dto.getTagIds(), dto.getNewTags());
     }
 
     // ────────────────────────────────── 태그 처리 (등록/수정 공통)
     private void assignTags(Integer documentId, List<Integer> tagIds, List<String> newTagNames) {
+        // 수정 시 기존 연결을 깨끗이 지우고 다시 만들기 위해 선삭제
+        documentTagService.deleteAllDocumentTags(documentId);
+
         List<Integer> allTagIds = new ArrayList<>();
 
         if (tagIds != null) {
@@ -164,6 +181,16 @@ public class DocumentService {
         entity.setExtraInfo(dto.getExtraInfo());
         entity.setFilePath(dto.getFilePath());
         entity.setSource(dto.getSource());
+
+        // 카테고리 실제 조회해서 세팅 (없으면 미분류 처리)
+        if (dto.getCategoryId() != null) {
+            CategoryEntity category = categoryRepository.findById(dto.getCategoryId())
+                    .orElseThrow(() -> new CategoryNotFoundException(dto.getCategoryId()));
+            entity.setCategory(category);
+        } else {
+            entity.setCategory(null);
+        }
+
         return entity;
     }
 
@@ -187,6 +214,7 @@ public class DocumentService {
                 entity.getCategory().getId() : null);
         dto.setCategoryName(entity.getCategory() != null ?
                 entity.getCategory().getName() : null);
+        dto.setTagIds(documentTagService.getTagIdsByDocument(entity.getId()));
         return dto;
     }
 
