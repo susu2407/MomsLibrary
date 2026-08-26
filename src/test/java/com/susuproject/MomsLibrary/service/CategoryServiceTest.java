@@ -1,7 +1,6 @@
 package com.susuproject.MomsLibrary.service;
  
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -90,6 +89,10 @@ class CategoryServiceTest {
         // Given: id=50인 카테고리(하위 카테고리 없음, parent_id=null)가 있고, 이 카테고리를 참조하는 Document 1개 있다고 존재
         CategoryEntity child = new CategoryEntity("IT", null);
         ReflectionTestUtils.setField(child, "id", 50);
+
+        // Given: 연결된 자료가 옮겨갈 "기타" 카테고리가 존재
+        CategoryEntity etc = new CategoryEntity("기타", null);
+        ReflectionTestUtils.setField(etc, "id", 99);
         
         DocumentEntity document = new DocumentEntity();
         document.setTitle("테스트 도서");
@@ -102,6 +105,9 @@ class CategoryServiceTest {
         // Given: child를 부모로 둔 하위 카테고리는 없음
         given(categoryRepository.findByParent(child)).willReturn(List.of());
 
+        // Given: "기타"로 조회하면 etc가 리턴됨
+        given(categoryRepository.findByName("기타")).willReturn(Optional.of(etc));
+
         // Given: child 카테고리를 쓰는 Document가 1개 있음
         given(documentRepository.findByCategory(child)).willReturn(List.of(document));
         
@@ -111,10 +117,10 @@ class CategoryServiceTest {
         // THen: 그 Document의 카테고리가 id=null로 세팅된 채로 documentRepository.save()가 호출됨.
         ArgumentCaptor<DocumentEntity> captor = ArgumentCaptor.forClass(DocumentEntity.class);
         verify(documentRepository).save(captor.capture());
-        assertNull(                 // 그 값이 null인지 확인
-            captor.getValue()       // 캡쳐해둔 값을 꺼냄 (= save()에 실제로 넘어갔던 DocumentEntity
-                .getCategory());    // 그 Document의 category 필드값을 가져옴
-        
+        // 그 값이 null인지 확인
+        assertEquals(etc,                  // "기타" 카테고리로 바뀌었는지 확인
+                captor.getValue()          // 캡쳐해둔 값을 꺼냄 (= save()에 실제로 넘어갔던 DocumentEntity)
+                        .getCategory());   // 그 Document의 category 필드값을 가져옴
         // Then: 카테고리 자체도 삭제됨
         verify(categoryRepository).delete(child);
     }

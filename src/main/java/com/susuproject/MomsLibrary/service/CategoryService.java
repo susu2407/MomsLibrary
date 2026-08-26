@@ -26,7 +26,7 @@ public class CategoryService {
         this.documentRepository = documentRepository;
     }
 
-
+    // ────────────────────────────────── 조회
     // 전체 카테고리 목록 조회
     public List<CategoryEntity> getAllCategories() {
         return categoryRepository.findAll();
@@ -42,6 +42,7 @@ public class CategoryService {
         return categoryRepository.findByParent(parent);
     }
 
+    // ────────────────────────────────── 등록
     // 카테고리 등록 + 예외처리
     @Transactional
     public CategoryEntity createCategory(CategoryEntity parent, String categoryName) {
@@ -49,6 +50,7 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
+    // ────────────────────────────────── 수정
     // 카테고리 수정 + 예외처리
     @Transactional
     public CategoryEntity updateCategory(CategoryEntity categoryEntity) {
@@ -63,6 +65,7 @@ public class CategoryService {
         return categoryRepository.save(categoryEntity);
     }
 
+    // ────────────────────────────────── 삭제
     // 카테고리 삭제 + 예외처리
     @Transactional
     public void deleteCategory(Integer id) {
@@ -76,14 +79,18 @@ public class CategoryService {
             throw new CategoryHasChildrenException(id);
         }
 
-        // 2. 이 카테고리를 쓰던 자료들 -> category_id를 null
+        // 2. "기타" 카테고리 조회 (연결된 자료를 옮길 곳)
+        CategoryEntity etcCategory = categoryRepository.findByName("기타")
+                .orElseThrow(() -> new IllegalStateException("'기타' 카테고리가 존재하지 않습니다."));
+
+        // 3. 이 카테고리를 쓰던 자료들 -> '기타'로 이동
         List<DocumentEntity> documents = documentRepository.findByCategory(categoryE);
         for (DocumentEntity document : documents) {
-            document.setCategory(null);
+            document.setCategory(etcCategory);
             documentRepository.save(document);
         }
 
-        // 3. 카테고리 삭제
+        // 4. 카테고리 삭제
         categoryRepository.delete(categoryE);
     }
 }
