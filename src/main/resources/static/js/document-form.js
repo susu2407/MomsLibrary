@@ -1,16 +1,12 @@
 // 태그 선택
 function pickTag(element) {
-
     const tagName = element.innerText;
     const tagId = element.dataset.id;
 
     const selectedTags = document.getElementById("selectedTags");
 
     // 중복 방지
-    const exists = selectedTags.querySelector(
-        `input[value="${tagId}"]`
-    );
-
+    const exists = selectedTags.querySelector(`input[value="${tagId}"]`);
     if (exists) return;
 
     // 추천 목록에서 제거
@@ -35,10 +31,33 @@ function pickTag(element) {
 
     span.appendChild(input);
     selectedTags.appendChild(span);
+
+    // 검색창 초기화 + 숨겨진 태그 다시 보이게
+    document.getElementById("tagSearch").value = "";
+    resetTagSuggestVisibility();
 }
 
 // 태그 제거
-function removeSelectedTag (element) {
+function removeSelectedTag(element) {
+    const hiddenInput = element.querySelector("input");
+
+    // 기본 태그(tagIds)였을 경우에만 추천 목록으로 되돌림
+    if (hiddenInput && hiddenInput.name === "tagIds") {
+        const tagId = hiddenInput.value;
+        const tagName = element.childNodes[0].textContent.replace(" x", "").trim();
+
+        const span = document.createElement("span");
+        span.className = "badge badge-gray";
+        span.style.cursor = "pointer";
+        span.innerText = tagName;
+        span.setAttribute("data-id", tagId);
+        span.onclick = function() {
+            pickTag(span);
+        };
+
+        document.getElementById("tagSuggest").appendChild(span);
+    }
+
     element.remove();
 }
 
@@ -109,7 +128,7 @@ function addTagToDocument(event) {
 }
 
 function resetTagSuggestVisibility() {
-    document.querySelectorAll("#tagSuggest .badge").forEach(bade => {
+    document.querySelectorAll("#tagSuggest .badge").forEach(badge => {
         badge.style.display = "";
     });
 }

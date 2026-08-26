@@ -157,20 +157,20 @@
                     </div>
                 </div>
  
-                <!-- 파일 첨부(하드코딩) -->
-                <div class="card" style="margin-bottom:0;">
-                    <div class="card-title">파일 첨부</div>
-                    <div class="drop-zone" id="dropZone">
-                        <div class="drop-hint">파일을 이곳에 드래그하거나</div>
-                        <button type="button" class="act-btn"
-                                onclick="document.getElementById('fileInput').click()">
-                            파일 선택
-                        </button>
-                        <input type="file" id="fileInput" style="display:none;" multiple onchange="handleFiles(this.files)">
-                    </div>
-                    <div id="fileList" style="margin-top:8px;"></div>
-                    <div style="margin-top:6px; font-size:11px; color:var(--text-tertiary);">PDF, EPUB, JPG, PNG 지원 · 최대 50MB</div>
-                </div>
+<!--                &lt;!&ndash; (리팩토링) 파일 첨부(하드코딩) &ndash;&gt;-->
+<!--                <div class="card" style="margin-bottom:0;">-->
+<!--                    <div class="card-title">파일 첨부</div>-->
+<!--                    <div class="drop-zone" id="dropZone">-->
+<!--                        <div class="drop-hint">파일을 이곳에 드래그하거나</div>-->
+<!--                        <button type="button" class="act-btn"-->
+<!--                                onclick="document.getElementById('fileInput').click()">-->
+<!--                            파일 선택-->
+<!--                        </button>-->
+<!--                        <input type="file" id="fileInput" style="display:none;" multiple onchange="handleFiles(this.files)">-->
+<!--                    </div>-->
+<!--                    <div id="fileList" style="margin-top:8px;"></div>-->
+<!--                    <div style="margin-top:6px; font-size:11px; color:var(&#45;&#45;text-tertiary);">PDF, EPUB, JPG, PNG 지원 · 최대 50MB</div>-->
+<!--                </div>-->
  
                 <!-- 파일 저장 위치/경로 -->
                 <div class="card" style="margin-bottom:0;">
@@ -197,8 +197,7 @@
         </div>
     </form>
 </div>
- 
-<script th:src="@{/js/common.js}"></script>
+
 <script th:src="@{/js/document-form.js}"></script>
 </body>
 </html>
