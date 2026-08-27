@@ -22,19 +22,19 @@ public class TagService {
         this.documentTagRepository = documentTagRepository;
     }
 
-    //전체 태그 목록 조회
+    // ──────────────────────────────────전체 태그 목록 조회
     public List<TagEntity> findAll() {
         return tagRepository.findAll();
     }
 
-    //태그 등록 (중복 체크 포함)
+    // ────────────────────────────────── 태그 등록 (중복 체크 포함)
     @Transactional
     public TagEntity createdTag(String name) {
         return tagRepository.findByName(name)
                 .orElseGet(() -> tagRepository.save(new TagEntity(name)));
     }
 
-    //태그 수정 + 예외처리
+    // ────────────────────────────────── 태그 수정 + 예외처리
     @Transactional
     public TagEntity updatedTag(TagEntity tagEntity) {
         Integer id = tagEntity.getId();
@@ -51,7 +51,7 @@ public class TagService {
         return tagRepository.save(tagEntity);
     }
 
-    //태그 삭제 + 예외처리
+    // ────────────────────────────────── 태그 삭제 + 예외처리
     @Transactional
     public void deletedTag(String name) {
         TagEntity tagEntity = tagRepository.findByName(name)
