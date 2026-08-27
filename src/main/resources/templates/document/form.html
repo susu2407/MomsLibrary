@@ -116,7 +116,7 @@
  
                 </div>
  
-                <div class="form-section-title">감상 / 메모</div>
+                <div class="form-section-title"> + </div>
                 <div class="form-grid">
  
                     <div class="form-group full">
@@ -141,6 +141,12 @@
                     <div class="card-title">태그</div>
                     <div class="tag-list" id="selectedTags"
                          style="margin-bottom:10px; min-height:24px;">
+                        <th:block th:each="tag : ${tags}" th:if="${document.tagIds != null and document.tagIds.contains(tag.id)}">
+                            <span class="badge badge-blue" style="cursor:pointer;" onclick="removeSelectedTag(this)">
+                                <span th:text="${tag.name} + ' x'"></span>
+                                <input type="hidden" name="tagIds" th:value="${tag.id}">
+                            </span>
+                        </th:block>
                     </div>
                     <input type="text" id="tagSearch" placeholder="태그 검색 또는 추가..."
                            style="width:100%; padding:7px 10px; border:0.5px solid var(--border-medium); border-radius:var(--radius-md); background:var(--bg-primary); color:var(--text-primary); font-family:var(--font); font-size:13px; outline:none;"

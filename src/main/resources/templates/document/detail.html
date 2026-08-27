@@ -32,7 +32,7 @@
                 <span class="badge badge-blue"
                       th:text="${document.categoryName} ?: '미분류'">
                 </span>
-                <span th:each="tagName : ${document.document.tagNames}" class="badge badge-gray" th:text="tagName"></span>
+                <span th:each="tagName : ${document.tagNames}" class="badge badge-gray" th:text="${tagName}"></span>
             </div>
         </div>
         <!-- 수정/삭제 버튼 -->
@@ -106,7 +106,7 @@
             </div>
 
             <div class="card">
-                <div class="card-title">한 줄 감상 / 메모</div>
+                <div class="card-title">한 줄 감상</div>
                 <p th:text="${document.memo} ?: '작성된 감상이 없습니다.'"
                    style="font-size:13px; line-height:1.75;">
                 </p>
