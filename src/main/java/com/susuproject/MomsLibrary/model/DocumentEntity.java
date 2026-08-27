@@ -9,7 +9,7 @@ import java.util.List;
 
 // 자료 데이터 구조
 @Entity
-@Table(name = "document")
+@Table(name = "Document")
 public class DocumentEntity {
 
     @Id

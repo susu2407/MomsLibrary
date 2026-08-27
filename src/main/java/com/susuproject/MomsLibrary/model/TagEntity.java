@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 // 태그 데이터 구조
 @Entity
-@Table(name = "tag")
+@Table(name = "Tag")
 public class TagEntity {
 
     @Id
