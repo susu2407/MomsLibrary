@@ -32,6 +32,7 @@
                 <span class="badge badge-blue"
                       th:text="${document.categoryName} ?: '미분류'">
                 </span>
+                <span th:each="tagName : ${document.document.tagNames}" class="badge badge-gray" th:text="tagName"></span>
             </div>
         </div>
         <!-- 수정/삭제 버튼 -->

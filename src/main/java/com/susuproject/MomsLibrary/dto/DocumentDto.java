@@ -32,7 +32,7 @@ public class DocumentDto {
 
     private List<Integer> tagIds;   // 기존 태그 선택용
     private List<String> newTags;   // 새 태그 추가용 (Tag 테이블 저장 후 DocumentTag에 연결)
-
+    private List<String> tagNames;   // 화면 표시용 태그 이름 목록
 
     // 기본 생성자
     public DocumentDto() {}
@@ -89,4 +89,6 @@ public class DocumentDto {
     public List<String> getNewTags() { return newTags; }
     public void setNewTags(List<String> newTags) { this.newTags = newTags; }
 
+    public List<String> getTagNames() { return tagNames; }
+    public void setTagNames(List<String> tagNames) { this.tagNames = tagNames; }
 }

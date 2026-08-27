@@ -40,6 +40,8 @@ public class DocumentController {
     @GetMapping("/documents")   // http://localhost:8080/documents
     public String documentList(Model model) {
         model.addAttribute("documents", documentService.getAllDocuments());
+        model.addAttribute("categories", categoryService.getAllCategories());
+        model.addAttribute("tags", tagService.findAll());
         return "document/list";
     }
     // ───────────────── 상세 화면

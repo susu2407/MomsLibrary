@@ -37,6 +37,14 @@
     <!-- 툴바 -->
     <div class="toolbar">
         <input type="text" id="searchInput" placeholder="제목, 저자, 출판사 검색...">
+        <select id="filterCat" onchange="filterTable()">
+            <option value="">전체 카테고리</option>
+            <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
+        </select>
+        <select id="filterTag" onchange="filterTable()">
+            <option value="">전체 태그</option>
+            <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.name}"></option>
+        </select>
         <a th:href="@{/documents/new}" class="btn-primary">+ 자료 등록</a>
     </div>
 
@@ -51,6 +59,7 @@
                 <th style="width:90px">저자</th>
                 <th style="width:80px">출판사</th>
                 <th style="width:80px">독서 시기</th>
+                <th>태그</th>
                 <th style="width:150px">한 줄 감상</th>
             </tr>
             </thead>
@@ -58,7 +67,7 @@
 
             <!-- 데이터 없을 때 -->
             <tr th:if="${documents.isEmpty()}">
-                <td colspan="7" style="text-align:center; padding:40px; color:var(--text-secondary)">
+                <td colspan="8" style="text-align:center; padding:40px; color:var(--text-secondary)">
                     등록된 자료가 없습니다.
                 </td>
             </tr>
@@ -81,6 +90,9 @@
                 <td th:text="${doc.author} ?: '-'"></td>
                 <td th:text="${doc.publisher} ?: '-'"></td>
                 <td th:text="${doc.readAt} ?: '-'" class="text-muted"></td>
+                <td>
+                    <span th:each="tagName : ${doc.tagNames}" class="badge badge-gray" th:text="${tagName}"></span>
+                </td>
                 <td th:text="${doc.memo} ?: '-'"
                     style="font-size:12px; color:var(--text-secondary)">
                 </td>

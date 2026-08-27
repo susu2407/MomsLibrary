@@ -215,6 +215,9 @@ public class DocumentService {
         dto.setCategoryName(entity.getCategory() != null ?
                 entity.getCategory().getName() : null);
         dto.setTagIds(documentTagService.getTagIdsByDocument(entity.getId()));
+        dto.setTagIds(documentTagService.getTagIdsByDocument(entity.getId()));
+        dto.setTagNames(documentTagService.getTagNamesByDocument(entity.getId()));
+
         return dto;
     }
 
