@@ -123,8 +123,11 @@ public class DocumentService {
 
     // ────────────────────────────────── 검색 / 조회 
     //자료 전체 목록 조회 (최신순) - 첫 화면 출력용
-    public List<DocumentEntity> getAllDocuments() {
-        return documentRepository.findAllByOrderByCreatedAtDesc();
+    public List<DocumentDto> getAllDocuments() {
+        return documentRepository.findAllByOrderByCreatedAtDesc()
+                .stream()
+                .map(this::toDto)
+                .toList();
     }
 
     // ID 조회: Entity → DTO 변환

@@ -84,7 +84,7 @@
                 </td>
                 <td>
                     <span class="badge badge-gray"
-                          th:text="${doc.category != null ? doc.category.name : '-'}">
+                          th:text="${doc.categoryName ?: '-'}">
                     </span>
                 </td>
                 <td th:text="${doc.author} ?: '-'"></td>
