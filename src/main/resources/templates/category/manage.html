@@ -73,17 +73,26 @@
         <!-- 태그 관리 사이드바 -->
         <div class="card" style="margin-bottom:0;">
             <div class="card-title">태그 관리</div>
+            <div class="tag-input-wrap">
+                <form th:action="@{/tags/new}" method="post" style="display:flex; gap:6px; width:100%;">
+                    <input type="text" name="name" placeholder="새 태그 이름..." required
+                           style="flex:1; padding:7px 10px; border:0.5px solid var(--border-medium); border-radius:var(--radius-md); background:var(--bg-primary); color:var(--text-primary); font-family:var(--font); font-size:13px; outline:none;">
+                    <button type="submit" class="btn-primary" style="font-size:12px; padding:7px 11px;">추가</button>
+                </form>
+            </div>
             <div class="tbl-wrap">
                 <table>
                     <thead>
                     <tr>
                         <th>태그명</th>
+                        <!-- <th style="width:52px; text-align:center;">사용 수</th> -->
                         <th style="width:52px; text-align:center;">삭제</th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="tagTbody">
                     <tr th:each="tag : ${tags}">
                         <td><span class="badge badge-gray" th:text="${tag.name}"></span></td>
+                        <!-- <td style="text-align:center; font-size:12px; color:var(--text-secondary);">사용 개수, (리팩토리)</td> -->
                         <td style="text-align:center;">
                             <form th:action="@{/tags/{name}/delete(name=${tag.name})}" method="post"
                                   onsubmit="return confirm('삭제하시겠습니까?')" style="display:inline;">

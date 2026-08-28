@@ -29,6 +29,7 @@ public class CategoryController {
     @GetMapping("/categories")
     public String categoryList(Model model) {
         model.addAttribute("categories", categoryService.getAllCategories());
+        model.addAttribute("tags", tagService.findAll());   // 태그 목록
         return "category/manage";
     }
 
@@ -95,11 +96,5 @@ public class CategoryController {
         return "redirect:/categories";
     }
 
-    // ────────────────────────────────── 태그 삭제
-    @PostMapping("/tags/{name}/delete")
-    public String deleteTag(@PathVariable String name) {
-        tagService.deletedTag(name);
-        return "redirect:/categories";
-    }
 
 }
