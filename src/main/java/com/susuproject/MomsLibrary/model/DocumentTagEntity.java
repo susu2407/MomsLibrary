@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 // 자료-태그 N:M 연결
 @Entity
 @Table(
-        name = "document_tag",
+        name = "DocumentTag",
         uniqueConstraints = @UniqueConstraint(columnNames = {"document_id", "tag_id"})
 )
 public class DocumentTagEntity {

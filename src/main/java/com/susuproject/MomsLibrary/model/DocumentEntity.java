@@ -9,7 +9,7 @@ import java.util.List;
 
 // 자료 데이터 구조
 @Entity
-@Table(name = "document")
+@Table(name = "Document")
 public class DocumentEntity {
 
     @Id
@@ -80,7 +80,6 @@ public class DocumentEntity {
 
     // getter / setter
     public Integer getId() { return id;}
-    public void setId(Integer id) { this.id = id;}
 
     public CategoryEntity getCategory() { return category; }
     public void setCategory(CategoryEntity category) { this.category = category; }

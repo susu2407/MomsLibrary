@@ -1,9 +1,12 @@
 package com.susuproject.MomsLibrary.service;
 
 import com.susuproject.MomsLibrary.dto.DocumentDto;
+import com.susuproject.MomsLibrary.exception.CategoryNotFoundException;
+import com.susuproject.MomsLibrary.exception.DocumentNotFoundException;
 import com.susuproject.MomsLibrary.model.CategoryEntity;
 import com.susuproject.MomsLibrary.model.DocumentEntity;
 import com.susuproject.MomsLibrary.model.TagEntity;
+import com.susuproject.MomsLibrary.repository.CategoryRepository;
 import com.susuproject.MomsLibrary.repository.DocumentRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Sort;
@@ -19,19 +22,22 @@ public class DocumentService {
 
     // DB 접근 객체(변경 불가(final)) + 생성자 주입
     private final DocumentRepository documentRepository;
+    private final CategoryRepository categoryRepository;
 
     private final TagService tagService;
     private final DocumentTagService documentTagService;
 
     public DocumentService(DocumentRepository documentRepository,
+                           CategoryRepository categoryRepository,
                            TagService tagService,
                            DocumentTagService documentTagService) {
         this.documentRepository = documentRepository;
+        this.categoryRepository = categoryRepository;
         this.tagService = tagService;
         this.documentTagService = documentTagService;
     }
 
-    // ───────────────── 등록 ─────────────────
+    // ────────────────────────────────── 등록 
     //자료 등록 (code 자동 생성 포함)
     @Transactional
     public void createDocument(DocumentDto dto) {
@@ -47,36 +53,19 @@ public class DocumentService {
 
         documentRepository.save(document);
 
-        // 2. 기존 + 신규 태그 합치기
-        List<Integer> tagIds = new ArrayList<>();
-
-        if (dto.getTagIds() != null) {
-            tagIds.addAll(dto.getTagIds());
-        }
-
-        if (dto.getNewTags() != null) {
-            for (String name : dto.getNewTags()) {
-
-                // 공백 방지
-                if (name == null || name.trim().isEmpty()) {
-                    continue;
-                }
-
-                TagEntity tag = tagService.createdTag(name);
-                tagIds.add(tag.getId());
-            }
-        }
-
-        // 3. DocumentTag 연결
-        documentTagService.saveDocumentTags(document.getId(), tagIds);
+        // 2. 기존 + 신규 태그 합치기 (등록/수정 공통 로직 호출)
+        assignTags(document.getId(), dto.getTagIds(), dto.getNewTags());
     }
 
-    // ───────────────── 수정 ─────────────────
+    // ────────────────────────────────── 수정 
     //자료 수정 + 예외처리
     @Transactional
     public void updateDocument(Integer id, DocumentDto dto) {
+        // 1. 수정 대상 조회 (없으면 예외)
         DocumentEntity entity = documentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 자료입니다. 수정이 불가능합니다."));
+                .orElseThrow(() -> new DocumentNotFoundException(id));
+        
+        // 2. dto 값으로 기존 entity 필드 덮어쓰기
         entity.setTitle(dto.getTitle());
         entity.setAuthor(dto.getAuthor());
         entity.setPublisher(dto.getPublisher());
@@ -88,25 +77,63 @@ public class DocumentService {
         entity.setExtraInfo(dto.getExtraInfo());
         entity.setFilePath(dto.getFilePath());
         entity.setSource(dto.getSource());
+
+        // 카테고리 실제 조회해서 세팅(미분류 선택 시 null 허용)
+        if (dto.getCategoryId() != null) {
+            CategoryEntity category = categoryRepository.findById(dto.getCategoryId())
+                    .orElseThrow(() -> new CategoryNotFoundException(dto.getCategoryId()));
+            entity.setCategory(category);
+        } else {
+            entity.setCategory(null);
+        }
+
+        // 3. 기존 + 신규 캐그 처리 (등록/수정 공통 로직 호출)
+        assignTags(entity.getId(), dto.getTagIds(), dto.getNewTags());
     }
 
-    // ───────────────── 삭제 ─────────────────
+    // ────────────────────────────────── 태그 처리 (등록/수정 공통)
+    private void assignTags(Integer documentId, List<Integer> tagIds, List<String> newTagNames) {
+        // 수정 시 기존 연결을 깨끗이 지우고 다시 만들기 위해 선삭제
+        documentTagService.deleteAllDocumentTags(documentId);
+
+        List<Integer> allTagIds = new ArrayList<>();
+
+        if (tagIds != null) {
+            allTagIds.addAll(tagIds);
+        }
+
+        if (newTagNames != null) {
+            for (String name : newTagNames) {
+                if (name == null || name.trim().isEmpty()) continue;    // 공백 방지
+                TagEntity tag = tagService.createdTag(name);
+                allTagIds.add(tag.getId());
+            }
+        }
+
+        // DocumentTag 연결
+        documentTagService.saveDocumentTags(documentId, allTagIds);
+    }
+
+    // ────────────────────────────────── 삭제 
     //자료 삭제
     @Transactional
     public void deleteDocument(Integer id) {
         documentRepository.findById(id).ifPresent(documentRepository::delete);
     }
 
-    // ───────────────── 검색 / 조회 ─────────────────
+    // ────────────────────────────────── 검색 / 조회 
     //자료 전체 목록 조회 (최신순) - 첫 화면 출력용
-    public List<DocumentEntity> getAllDocuments() {
-        return documentRepository.findAllByOrderByCreatedAtDesc();
+    public List<DocumentDto> getAllDocuments() {
+        return documentRepository.findAllByOrderByCreatedAtDesc()
+                .stream()
+                .map(this::toDto)
+                .toList();
     }
 
     // ID 조회: Entity → DTO 변환
     public DocumentDto findById(Integer id) {
         DocumentEntity entity = documentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("없는 자료입니다."));
+                .orElseThrow(() -> new DocumentNotFoundException(id));
         return toDto(entity);   // Entity → DTO 변환해서 반환
     }
 
@@ -133,7 +160,7 @@ public class DocumentService {
         return documentRepository.findByCategory(category);
     }
 
-    // ───────────────── 정렬 ─────────────────
+    // ────────────────────────────────── 정렬 
     // 동적 코드 사용해보기
     public List<DocumentEntity> orderByOptionDocument() {
         return documentRepository.findAll(
@@ -142,7 +169,7 @@ public class DocumentService {
         );
     }
 
-    // ───────────────── 데이터 변환 ─────────────────
+    // ────────────────────────────────── 데이터 변환 
     // DTO → Entity (등록/수정할 때 사용)
     private DocumentEntity toEntity(DocumentDto dto) {
         DocumentEntity entity = new DocumentEntity();
@@ -157,6 +184,16 @@ public class DocumentService {
         entity.setExtraInfo(dto.getExtraInfo());
         entity.setFilePath(dto.getFilePath());
         entity.setSource(dto.getSource());
+
+        // 카테고리 실제 조회해서 세팅 (없으면 미분류 처리)
+        if (dto.getCategoryId() != null) {
+            CategoryEntity category = categoryRepository.findById(dto.getCategoryId())
+                    .orElseThrow(() -> new CategoryNotFoundException(dto.getCategoryId()));
+            entity.setCategory(category);
+        } else {
+            entity.setCategory(null);
+        }
+
         return entity;
     }
 
@@ -180,6 +217,10 @@ public class DocumentService {
                 entity.getCategory().getId() : null);
         dto.setCategoryName(entity.getCategory() != null ?
                 entity.getCategory().getName() : null);
+        dto.setTagIds(documentTagService.getTagIdsByDocument(entity.getId()));
+        dto.setTagIds(documentTagService.getTagIdsByDocument(entity.getId()));
+        dto.setTagNames(documentTagService.getTagNamesByDocument(entity.getId()));
+
         return dto;
     }
 

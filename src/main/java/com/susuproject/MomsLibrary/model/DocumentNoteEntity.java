@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 // 자료별 메모
 @Entity
-@Table(name = "document_note")
+@Table(name = "DocumentNote")
 public class DocumentNoteEntity {
 
     @Id

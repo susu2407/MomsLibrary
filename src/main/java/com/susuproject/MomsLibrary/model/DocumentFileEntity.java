@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 // 파일 첨부
 @Entity
-@Table(name = "document_file")
+@Table(name = "DocumentFile")
 public class DocumentFileEntity {
 
     @Id

@@ -4,10 +4,9 @@
 
 <header th:fragment="header" class="app-header">
     <div class="logo">📚 자료 관리</div>
-    <nav class="nav-tabs">
-        <a class="tab-btn" th:href="@{/documents}">목록</a>
-        <a class="tab-btn" th:href="@{/documents/new}">자료 등록</a>
-        <a class="tab-btn" th:href="@{/categories}">카테고리 관리</a>
+    <nav class="nav-tabs" style="border:none; margin:0; padding:0; background:none; border-radius:0;">
+        <a class="tab-btn" th:href="@{/documents}" style="text-decoration:none;">목록</a>
+        <a class="tab-btn" th:href="@{/categories}" style="text-decoration:none;">카테고리/태그 관리</a>
     </nav>
 </header>
 

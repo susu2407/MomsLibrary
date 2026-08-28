@@ -3,11 +3,19 @@ package com.susuproject.MomsLibrary.dto;
 
 import java.util.List;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class DocumentDto {
 
     private Integer id;
+
+    @NotNull(message = "카테고리를 선택해 주세요.")
     private Integer categoryId;
+
+    @NotBlank(message = "제목은 필수 항목입니다.")
     private String title;
+    
     private String author;
     private String publisher;
     private String publishedAt;
@@ -24,7 +32,7 @@ public class DocumentDto {
 
     private List<Integer> tagIds;   // 기존 태그 선택용
     private List<String> newTags;   // 새 태그 추가용 (Tag 테이블 저장 후 DocumentTag에 연결)
-
+    private List<String> tagNames;   // 화면 표시용 태그 이름 목록
 
     // 기본 생성자
     public DocumentDto() {}
@@ -81,4 +89,6 @@ public class DocumentDto {
     public List<String> getNewTags() { return newTags; }
     public void setNewTags(List<String> newTags) { this.newTags = newTags; }
 
+    public List<String> getTagNames() { return tagNames; }
+    public void setTagNames(List<String> tagNames) { this.tagNames = tagNames; }
 }

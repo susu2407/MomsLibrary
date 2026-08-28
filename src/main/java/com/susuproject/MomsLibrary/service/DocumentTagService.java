@@ -38,6 +38,17 @@ public class DocumentTagService {
                 .toList();
     }
 
+    // 특정 자료의 태그 이름 목록 조회 (화면 표시용)
+    public List<String> getTagNamesByDocument(Integer documentId) {
+        DocumentEntity document = documentRepository.findById(documentId)
+                .orElseThrow(() -> new RuntimeException("해당 자료를 찾을 수 없습니다."));
+
+        return documentTagRepository.findByDocument(document)
+                .stream()
+                .map(dt -> dt.getTag().getName())
+                .toList();
+    }
+
     // 자료에 태그 연결 (여러 개)
     @Transactional
     public void saveDocumentTags (Integer documentId, List<Integer> tagIds) {

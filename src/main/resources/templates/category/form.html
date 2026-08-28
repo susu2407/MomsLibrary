@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${mode == 'edit'} ? '카테고리 수정' : '카테고리 등록'">카테고리 폼</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/document.css}">
+</head>
+<body>
+
+<div th:replace="~{fragment/header :: header}"></div>
+
+<div class="app-body">
+
+    <div class="breadcrumb">
+        <a th:href="@{/categories}" class="link" style="text-decoration:none;">카테고리 관리</a>
+        <span class="bc-sep">/</span>
+        <span>카테고리 등록</span>
+    </div>
+
+    <form th:action="${mode == 'edit'} ?
+                  @{/categories/{id}/edit(id=${category.id})} :
+                  @{/categories/new}"
+          th:object="${category}" method="post">
+
+        <div class="card" style="max-width:480px;">
+
+            <div class="form-section-title"
+                 th:text="${mode == 'edit'} ? '카테고리 수정' : '새 카테고리'">새 카테고리</div>
+
+            <div class="form-grid">
+                <div class="form-group full">
+                    <label>카테고리명 <span class="req">*</span></label>
+                    <input type="text" th:field="*{name}" placeholder="예: 인문학">
+                    <span th:if="${#fields.hasErrors('name')}"
+                          th:errors="*{name}"
+                          style="color:var(--text-danger); font-size:12px;"></span>
+                </div>
+
+                <div class="form-group full">
+                    <label>상위 카테고리</label>
+                    <select th:field="*{parentId}">
+                        <option value="">없음 (최상위)</option>
+                        <option th:each="cat : ${categories}"
+                                th:if="${cat.parent == null}"
+                                th:value="${cat.id}"
+                                th:text="${cat.name}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:8px; margin-top:16px;">
+                <a th:href="@{/categories}" class="btn-outline"
+                   style="flex:1; text-align:center; padding:10px; text-decoration:none;">
+                    취소
+                </a>
+                <button type="submit" class="btn-primary" style="flex:1; padding:10px;"
+                        th:text="${mode == 'register'} ? '저장' : '수정 완료'"> 작업 버튼
+                </button>
+            </div>
+
+        </div>
+    </form>
+
+</div>
+
+</body>
+</html>

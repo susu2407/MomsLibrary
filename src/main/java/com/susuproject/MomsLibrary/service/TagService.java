@@ -1,6 +1,8 @@
 package com.susuproject.MomsLibrary.service;
 
+import com.susuproject.MomsLibrary.exception.TagNotFoundException;
 import com.susuproject.MomsLibrary.model.TagEntity;
+import com.susuproject.MomsLibrary.repository.DocumentTagRepository;
 import com.susuproject.MomsLibrary.repository.TagRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -12,28 +14,35 @@ public class TagService {
 
     // DB 연결 + 생성자
     private final TagRepository tagRepository;
+    private final DocumentTagRepository documentTagRepository;
 
-    public TagService(TagRepository tagRepository) {
+    public TagService(TagRepository tagRepository,
+                      DocumentTagRepository documentTagRepository) {
         this.tagRepository = tagRepository;
+        this.documentTagRepository = documentTagRepository;
     }
 
-    //전체 태그 목록 조회
+    // ──────────────────────────────────전체 태그 목록 조회
     public List<TagEntity> findAll() {
         return tagRepository.findAll();
     }
 
-    //태그 등록 (중복 체크 포함)
+    // ────────────────────────────────── 태그 등록 (중복 체크 포함)
     @Transactional
     public TagEntity createdTag(String name) {
         return tagRepository.findByName(name)
                 .orElseGet(() -> tagRepository.save(new TagEntity(name)));
     }
 
-    //태그 수정 + 예외처리
+    // ────────────────────────────────── 태그 수정 + 예외처리
     @Transactional
     public TagEntity updatedTag(TagEntity tagEntity) {
-        if (tagEntity.getId() == null) {
-            throw new IllegalArgumentException("존재하지 않는 태그입니다. 수정이 불가합니다.");
+        Integer id = tagEntity.getId();
+        if (id == null) {
+            throw new IllegalArgumentException("수정할 태그의 id가 없습니다.");
+        }
+        if (!tagRepository.existsById(id)) {
+            throw new TagNotFoundException(id);
         }
 
 //      TagEntity tag = new TagEntity(name);
@@ -42,9 +51,15 @@ public class TagService {
         return tagRepository.save(tagEntity);
     }
 
-    //태그 삭제 + 예외처리
+    // ────────────────────────────────── 태그 삭제 + 예외처리
     @Transactional
     public void deletedTag(String name) {
-        tagRepository.findByName(name).ifPresent(tagRepository::delete);
+        TagEntity tagEntity = tagRepository.findByName(name)
+                .orElseThrow(() -> new TagNotFoundException(name));
+
+        // 연결된 DocumentTag 먼저 삭제 (cascade)
+        documentTagRepository.deleteByTag(tagEntity);
+
+        tagRepository.delete(tagEntity);
     }
 }
