@@ -45,7 +45,7 @@
             <option value="">전체 태그</option>
             <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.name}"></option>
         </select>
-        <a th:href="@{/documents/new}" class="btn-primary">+ 자료 등록</a>
+        <a th:href="@{/documents/new}" class="btn-primary" style="text-decoration:none;">+ 자료 등록</a>
     </div>
 
     <!-- 테이블 -->
@@ -79,7 +79,7 @@
                     <!-- 제목 클릭하면 상세 페이지로 이동 -->
                     <a th:href="@{/documents/{id}(id=${doc.id})}"
                        th:text="${doc.title}"
-                       style="font-weight:500; color:var(--text-info)">
+                       style="font-weight:500; color:var(--text-info); text-decoration:none;">
                     </a>
                 </td>
                 <td>

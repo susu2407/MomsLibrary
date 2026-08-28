@@ -13,7 +13,7 @@
 <div class="app-body">
 
     <div class="breadcrumb">
-        <a th:href="@{/documents}" class="link">목록</a>
+        <a th:href="@{/documents}" class="link" style="text-decoration:none;">목록</a>
         <span class="bc-sep">/</span>
         <span th:text="${document.title}"></span>
     </div>
@@ -38,7 +38,7 @@
         <!-- 수정/삭제 버튼 -->
         <div style="display:flex; gap:8px;">
             <a th:href="@{/documents/{id}/edit(id=${document.id})}"
-               class="btn-outline">수정</a>
+               class="btn-outline" style="text-decoration:none;">수정</a>
             <form th:action="@{/documents/{id}/delete(id=${document.id})}"
                   method="post"
                   onsubmit="return confirm('정말 삭제하시겠습니까?')">
