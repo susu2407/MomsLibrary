@@ -153,7 +153,7 @@
                            onkeydown="if(event.key==='Enter'){event.preventDefault();addTagToDocument(event)}">
                     <div style="margin-top:8px; display:flex; flex-wrap:wrap; gap:5px;" id="tagSuggest">
                         <span th:each="tag : ${tags}"
-                              th:if="${document.document.tagIds == null or !document.tagIds.contains(tag.id)}"
+                              th:if="${document.tagIds == null or !document.tagIds.contains(tag.id)}"
                               class="badge badge-gray"
                               style="cursor:pointer;"
                               th:text="${tag.name}"
