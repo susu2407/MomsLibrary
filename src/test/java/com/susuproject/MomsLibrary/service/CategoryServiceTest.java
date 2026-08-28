@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import java.util.List;
 import java.util.Optional;
 
+import com.susuproject.MomsLibrary.dto.CategoryDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -48,13 +49,13 @@ class CategoryServiceTest {
     @Test
     void updateCategory_존재하지않는id_예외발생() {
         // Given: id=999인 카테고리로 수정 시도, 실제로는 존재하지 않음
-        CategoryEntity category = new CategoryEntity(null, null);
-        ReflectionTestUtils.setField(category, "id", 999);
-        given(categoryRepository.existsById(999)).willReturn(false);
+        CategoryDto dto = new CategoryDto();
+        dto.setName("변경할이름");
+        given(categoryRepository.findById(999)).willReturn(Optional.empty());
  
         // When & Then
         assertThrows(CategoryNotFoundException.class, () -> {
-            categoryService.updateCategory(category);
+            categoryService.updateCategory(999, dto);
         });
     }
 

@@ -22,4 +22,6 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity,Integer
     // 이름으로 카테고리 조회 (카테고리 삭제 시 "기타" 카테고리를 찾기 위해 사용)
     Optional<CategoryEntity> findByName(String name);
 
+    // 이름순 정렬 (가나다 순)
+    List<CategoryEntity> findAllByOrderByNameAsc();
 }

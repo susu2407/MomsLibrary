@@ -19,7 +19,10 @@
 
         <!-- 카테고리 테이블 -->
         <div>
-            <div class="section-label" style="margin-bottom:12px;">카테고리 목록</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div class="section-label" style="margin:0;">카테고리 목록</div>
+                <a th:href="@{/categories/new}" class="btn-primary" style="font-size:12px; padding:7px 13px; text-decoration:none;">+ 카테고리 추가</a>
+            </div>
 
             <div class="tbl-wrap">
                 <table>
@@ -28,25 +31,40 @@
                         <th style="width:40px;">ID</th>
                         <th>카테고리명</th>
                         <th style="width:110px;">상위 카테고리</th>
-                        <th style="width:90px; text-align:center;">관리</th>
+                        <th style="width:100px; text-align:center;">관리</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="cat : ${categories}">
-                        <td class="text-hint" th:text="${cat.id}"></td>
-                        <td th:text="${cat.parent == null} ? '📁 ' + ${cat.name} : '└ ' + ${cat.name}"
-                            th:class="${cat.parent != null} ? 'cat-indent text-muted' : ''"></td>
-                        <td>
-                            <span th:if="${cat.parent != null}" class="badge badge-gray" style="font-size:10px;" th:text="${cat.parent.name}"></span>
-                            <span th:if="${cat.parent == null}" class="text-hint">—</span>
-                        </td>
-                        <td style="text-align:center;">
-                            <form th:action="@{/categories/{id}/delete(id=${cat.id})}" method="post"
-                                  onsubmit="return confirm('삭제하시겠습니까?')" style="display:inline;">
-                                <button type="submit" class="act-btn">삭제</button>
-                            </form>
-                        </td>
-                    </tr>
+                    <th:block th:each="cat : ${categories}" th:if="${cat.parent == null}">
+                        <tr>
+                            <td class="text-hint" th:text="${cat.id}"></td>
+                            <td style="font-weight:500;" th:text="'📁 ' + ${cat.name}"></td>
+                            <td class="text-hint">—</td>
+                            <td style="text-align:center;">
+                                <div style="display:flex; gap:4px; justify-content:center;">
+                                    <a th:href="@{/categories/{id}/edit(id=${cat.id})}" class="act-btn" style="text-decoration:none;">수정</a>
+                                    <form th:action="@{/categories/{id}/delete(id=${cat.id})}" method="post"
+                                          onsubmit="return confirm('삭제하시겠습니까?')" style="display:inline;">
+                                        <button type="submit" class="act-btn">삭제</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:each="sub : ${categories}" th:if="${sub.parent != null and sub.parent.id == cat.id}">
+                            <td class="text-hint" th:text="${sub.id}"></td>
+                            <td class="cat-indent text-muted" th:text="'└ ' + ${sub.name}"></td>
+                            <td><span class="badge badge-gray" style="font-size:10px;" th:text="${cat.name}"></span></td>
+                            <td style="text-align:center;">
+                                <div style="display:flex; gap:4px; justify-content:center;">
+                                    <a th:href="@{/categories/{id}/edit(id=${sub.id})}" class="act-btn" style="text-decoration:none;">수정</a>
+                                    <form th:action="@{/categories/{id}/delete(id=${sub.id})}" method="post"
+                                          onsubmit="return confirm('삭제하시겠습니까?')" style="display:inline;">
+                                        <button type="submit" class="act-btn">삭제</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </th:block>
                     </tbody>
                 </table>
             </div>

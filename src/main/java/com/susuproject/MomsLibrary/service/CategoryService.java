@@ -1,5 +1,6 @@
 package com.susuproject.MomsLibrary.service;
 
+import com.susuproject.MomsLibrary.dto.CategoryDto;
 import com.susuproject.MomsLibrary.exception.CategoryHasChildrenException;
 import com.susuproject.MomsLibrary.exception.CategoryNotFoundException;
 import com.susuproject.MomsLibrary.model.CategoryEntity;
@@ -27,9 +28,9 @@ public class CategoryService {
     }
 
     // ────────────────────────────────── 조회
-    // 전체 카테고리 목록 조회
+    // 전체 카테고리 목록 조회 (이름 가나다 순)
     public List<CategoryEntity> getAllCategories() {
-        return categoryRepository.findAll();
+        return categoryRepository.findAllByOrderByNameAsc();
     }
 
     // 상위 카테고리만 조회 (parent_id가 null인 것)
@@ -45,24 +46,42 @@ public class CategoryService {
     // ────────────────────────────────── 등록
     // 카테고리 등록 + 예외처리
     @Transactional
-    public CategoryEntity createCategory(CategoryEntity parent, String categoryName) {
-        CategoryEntity category = new CategoryEntity(categoryName, parent);
-        return categoryRepository.save(category);
+    public CategoryEntity createCategory(CategoryDto dto) {
+        CategoryEntity parent = null;
+
+        // 상위 카테고리를 선택했으면 조회
+        if (dto.getParentId() != null) {
+            parent = categoryRepository.findById(dto.getParentId())
+                    .orElseThrow(() -> new CategoryNotFoundException(dto.getParentId()));
+        }
+
+        CategoryEntity categoryE = new CategoryEntity(dto.getName(), parent);
+        return categoryRepository.save(categoryE);
     }
 
     // ────────────────────────────────── 수정
     // 카테고리 수정 + 예외처리
     @Transactional
-    public CategoryEntity updateCategory(CategoryEntity categoryEntity) {
-        Integer id = categoryEntity.getId();
+    public CategoryEntity updateCategory(Integer id, CategoryDto dto) {
+        CategoryEntity entity = categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundException(id));
 
-        if (id == null) {
-            throw new IllegalArgumentException("수정할 카테고리의 id가 없습니다.");
+        CategoryEntity parent = null;
+        if (dto.getParentId() != null) {
+            parent = categoryRepository.findById(dto.getParentId()).
+            orElseThrow(() -> new CategoryNotFoundException(dto.getParentId()));
         }
-        if (!categoryRepository.existsById(id)) {
-            throw new CategoryNotFoundException(id);
-        }
-        return categoryRepository.save(categoryEntity);
+
+        entity.setName(dto.getName());
+        entity.setParent(parent);
+
+        return categoryRepository.save(entity);
+    }
+
+    // 수정을 위한 단건 조회
+    public CategoryEntity findById(Integer id) {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundException(id));
     }
 
     // ────────────────────────────────── 삭제
