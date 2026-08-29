@@ -98,4 +98,3 @@ JUnit5 + Mockito, 총 11개. <br>
 - 카테고리/태그 삭제 시 "몇 개 자료에 영향을 주는지" 사전 안내
 - 통계성 지표(전체 자료 수, 이번 달 등록 수 등) 실데이터 연동
 - 개발 과정에서 사용한 임시 코드(`exampleAi.html`, `HelloController.java`) 정리
-](https://docs.google.com/document/d/1KKAAIxbI4kPSwmBg4zxTeplgTGF2HaBwx5nZPiwPllw/edit?usp=sharing)에서 확인할 수 있습니다.
