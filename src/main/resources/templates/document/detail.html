@@ -8,12 +8,12 @@
 </head>
 <body>
 
-<div th:replace="~{fragment/header :: header}"></div>
+<div th:replace="~{fragment/header :: header(active='documents')}"></div>
 
 <div class="app-body">
 
     <div class="breadcrumb">
-        <a th:href="@{/documents}" class="link">목록</a>
+        <a th:href="@{/documents}" class="link" style="text-decoration:none;">목록</a>
         <span class="bc-sep">/</span>
         <span th:text="${document.title}"></span>
     </div>
@@ -32,12 +32,13 @@
                 <span class="badge badge-blue"
                       th:text="${document.categoryName} ?: '미분류'">
                 </span>
+                <span th:each="tagName : ${document.tagNames}" class="badge badge-gray" th:text="${tagName}"></span>
             </div>
         </div>
         <!-- 수정/삭제 버튼 -->
         <div style="display:flex; gap:8px;">
             <a th:href="@{/documents/{id}/edit(id=${document.id})}"
-               class="btn-outline">수정</a>
+               class="btn-outline" style="text-decoration:none;">수정</a>
             <form th:action="@{/documents/{id}/delete(id=${document.id})}"
                   method="post"
                   onsubmit="return confirm('정말 삭제하시겠습니까?')">
@@ -105,7 +106,7 @@
             </div>
 
             <div class="card">
-                <div class="card-title">한 줄 감상 / 메모</div>
+                <div class="card-title">한 줄 감상</div>
                 <p th:text="${document.memo} ?: '작성된 감상이 없습니다.'"
                    style="font-size:13px; line-height:1.75;">
                 </p>
