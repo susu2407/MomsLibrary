@@ -6,15 +6,22 @@
 ---
 
 ## 화면
+### 목록 화면
+![목록 화면](./docs/screenshots/MomsLibrary-document.png)
 
-<!-- TODO: 스크린샷 삽입 -->
-| 목록 | 상세 |
-|---|---|
-| ![목록 화면](./docs/screenshots/list.png) | ![상세 화면](./docs/screenshots/detail.png) |
+### 상세 화면
+![상세 화면](./docs/screenshots/MomsLibrary-document_detail.png)
 
-| 자료 등록/수정 | 카테고리/태그 관리 |
-|---|---|
-| ![자료 폼](./docs/screenshots/form.png) | ![카테고리 관리](./docs/screenshots/category.png) |
+### 자료 등록 화면
+![자료 폼](./docs/screenshots/MomsLibrary-document_form.png)
+태그 선택 및 검색
+![자료 폼](./docs/screenshots/MomsLibrary-document_form_tag.png)
+
+### 카테고리 관리 화면
+![카테고리 관리](./docs/screenshots/MomsLibrary-category_manage.png)
+
+### 카테고리 등록 화면
+![카테고리 관리](./docs/screenshots/MomsLibrary-category_form.png)
 
 ---
 
@@ -70,7 +77,25 @@ JUnit5 + Mockito, 총 11개. <br>
 
 ---
 
-## 더 알아보기
+## 진행 상황
 
-프로젝트 기획 과정, 상세 도메인 규칙 흐름, 기능 구현 현황, Git 브랜치 전략,
-향후 개선 검토 목록은 [기획 및 설계 문서](https://docs.google.com/document/d/1KKAAIxbI4kPSwmBg4zxTeplgTGF2HaBwx5nZPiwPllw/edit?usp=sharing)에서 확인할 수 있습니다.
+### 완료
+- **자료(Document)**<br>—등록/조회/수정/삭제<br>—목록·상세 화면에 카테고리·태그 표시
+- **카테고리(Category)**<br>—등록/수정/삭제<br>—상위-하위 계층 구조<br>—삭제 시 하위 존재 여부에 따라 처리 분기
+- **태그(Tag)**<br>—등록/삭제<br>—검색 UI<br>—자료 등록·수정 시 기존 선택 또는 신규 즉시 생성
+- **예외 처리**<br>—도메인별 커스텀 예외<br>—`@ControllerAdvice` 전역 처리로 일관된 에러 응답
+- **검증**<br>—서버단 필수값 검증(`@Valid`)으로 클라이언트 우회 방지
+- **테스트**<br>—JUnit5 + Mockito 기반 서비스 레이어 단위 테스트 11개<br>—실제 버그 1건 발견·수정
+### 진행 중 / 다듬는 중
+- CSS 인라인 스타일 일부 정리
+### Backlog (향후 개선 검토)
+- 인증/보안 (Spring Security) — 개인 사용 환경 특성상 우선순위를 낮게 판단
+- 자료 검색/필터 화면 연결
+- 카테고리별 색상 지정 기능
+- 페이지네이션 (현재는 전체 목록을 한 번에 표시, 자료가 많아지면 필요)
+- 파일 위치 지정 및 연결 기능 (`DocumentFile`)
+- 메모 기능 (`DocumentNote`)
+- 카테고리/태그 삭제 시 "몇 개 자료에 영향을 주는지" 사전 안내
+- 통계성 지표(전체 자료 수, 이번 달 등록 수 등) 실데이터 연동
+- 개발 과정에서 사용한 임시 코드(`exampleAi.html`, `HelloController.java`) 정리
+](https://docs.google.com/document/d/1KKAAIxbI4kPSwmBg4zxTeplgTGF2HaBwx5nZPiwPllw/edit?usp=sharing)에서 확인할 수 있습니다.
