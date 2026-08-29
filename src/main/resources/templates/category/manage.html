@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<div th:replace="~{fragment/header :: header}"></div>
+<div th:replace="~{fragment/header :: header(active='categories')}"></div>
 
 <div class="app-body">
     <div th:if="${errorMessage}" class="badge badge-danger" style="display:block; padding:10px; margin-bottom:14px;">

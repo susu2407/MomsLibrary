@@ -5,8 +5,12 @@
 <header th:fragment="header" class="app-header">
     <div class="logo">📚 자료 관리</div>
     <nav class="nav-tabs" style="border:none; margin:0; padding:0; background:none; border-radius:0;">
-        <a class="tab-btn" th:href="@{/documents}" style="text-decoration:none;">목록</a>
-        <a class="tab-btn" th:href="@{/categories}" style="text-decoration:none;">카테고리/태그 관리</a>
+        <a class="tab-btn" style="text-decoration:none;"
+           th:classappend="${active == 'documents'} ? ' active' : ''"
+           th:href="@{/documents}">목록</a>
+        <a class="tab-btn" style="text-decoration:none;"
+           th:classappend="${active == 'categories'} ? ' active' : ''"
+           th:href="@{/categories}">카테고리/태그 관리</a>
     </nav>
 </header>
 

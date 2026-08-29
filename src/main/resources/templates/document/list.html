@@ -7,7 +7,7 @@
     <link rel="stylesheet" th:href="@{/css/document.css}">
 </head>
 <body>
-<div th:replace="~{fragment/header :: header}"></div>
+<div th:replace="~{fragment/header :: header(active='documents')}"></div>
 
 <div class="app-body">
     <div th:if="${errorMessage}" class="badge badge-danger" style="display:block; padding:10px; margin-bottom:14px;">
@@ -53,14 +53,13 @@
         <table>
             <thead>
             <tr>
-                <th style="width:36px"><input type="checkbox"></th>
                 <th style="width:220px">제목</th>
-                <th style="width:90px">카테고리</th>
-                <th style="width:90px">저자</th>
-                <th style="width:80px">출판사</th>
-                <th style="width:80px">독서 시기</th>
+                <th style="width:120px">카테고리</th>
+                <th style="width:120px">저자</th>
+                <th style="width:120px">출판사</th>
+                <th style="width:120px">독서 시기</th>
                 <th>태그</th>
-                <th style="width:150px">한 줄 감상</th>
+                <th style="width:250px">한 줄 감상</th>
             </tr>
             </thead>
             <tbody>
@@ -74,7 +73,6 @@
 
             <!-- 데이터 있을 때 - DB에서 받아온 documents 리스트 반복 -->
             <tr th:each="doc : ${documents}" th:unless="${documents.isEmpty()}">
-                <td><input type="checkbox"></td>
                 <td>
                     <!-- 제목 클릭하면 상세 페이지로 이동 -->
                     <a th:href="@{/documents/{id}(id=${doc.id})}"
@@ -87,13 +85,14 @@
                           th:text="${doc.categoryName ?: '-'}">
                     </span>
                 </td>
-                <td th:text="${doc.author} ?: '-'"></td>
-                <td th:text="${doc.publisher} ?: '-'"></td>
+                <td th:text="${doc.author} ?: '-'" class="ellipsis"></td>
+                <td th:text="${doc.publisher} ?: '-'" class="ellipsis"></td>
                 <td th:text="${doc.readAt} ?: '-'" class="text-muted"></td>
                 <td>
                     <span th:each="tagName : ${doc.tagNames}" class="badge badge-gray" th:text="${tagName}"></span>
                 </td>
                 <td th:text="${doc.memo} ?: '-'"
+                    class="ellipsis"
                     style="font-size:12px; color:var(--text-secondary)">
                 </td>
             </tr>
